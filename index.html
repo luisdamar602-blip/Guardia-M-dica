@@ -387,7 +387,7 @@
 
     <script>
         // =====================================================
-        // 🔥 CONFIGURACIÓN DE APPWRITE
+        // 🔥 CONFIGURACIÓN DE APPWRITE (Actualizado v17)
         // =====================================================
         const APPWRITE_ENDPOINT = 'https://fra.cloud.appwrite.io/v1';
         const APPWRITE_PROJECT_ID = '6ac9835b000780738341';
@@ -396,7 +396,7 @@
         const TABLA_PENDIENTES = '6aca9982002826d97f92';
         const TABLA_RECADOS = '6aca9a55002a4854c35e';
 
-        let client, tablesDB, account, realtime;
+        let client, databases, account, realtime;
         let listadoSalas = [];
         let data = { pacientes: [], pendientes: [], recados: [] };
         let tareasTemporales = [];
@@ -410,13 +410,13 @@
         // =====================================================
         async function inicializarAppwrite() {
             try {
-                const { Client, TablesDB, Account, Realtime } = Appwrite;
+                const { Client, Databases, Account, Realtime } = Appwrite;
                 
                 client = new Client()
                     .setEndpoint(APPWRITE_ENDPOINT)
                     .setProject(APPWRITE_PROJECT_ID);
                 
-                tablesDB = new TablesDB(client);
+                databases = new Databases(client);
                 account = new Account(client);
                 realtime = new Realtime(client);
                 
@@ -464,12 +464,12 @@
             
             try {
                 // Pacientes
-                const resPacientes = await tablesDB.listRows({
-                    databaseId: DB_ID,
-                    tableId: TABLA_PACIENTES,
-                    queries: [Query.limit(500)]
-                });
-                data.pacientes = resPacientes.rows.map(r => ({
+                const resPacientes = await databases.listDocuments(
+                    DB_ID,
+                    TABLA_PACIENTES,
+                    [Query.limit(500)]
+                );
+                data.pacientes = resPacientes.documents.map(r => ({
                     id: r.$id,
                     nombre: r.nombre || 'Anónimo',
                     cama: r.cama || null,
@@ -488,12 +488,12 @@
                 }));
                 
                 // Pendientes
-                const resPendientes = await tablesDB.listRows({
-                    databaseId: DB_ID,
-                    tableId: TABLA_PENDIENTES,
-                    queries: [Query.limit(500)]
-                });
-                data.pendientes = resPendientes.rows.map(r => ({
+                const resPendientes = await databases.listDocuments(
+                    DB_ID,
+                    TABLA_PENDIENTES,
+                    [Query.limit(500)]
+                );
+                data.pendientes = resPendientes.documents.map(r => ({
                     id: r.$id,
                     texto: r.texto || '',
                     sala: r.sala || null,
@@ -505,12 +505,12 @@
                 }));
                 
                 // Recados
-                const resRecados = await tablesDB.listRows({
-                    databaseId: DB_ID,
-                    tableId: TABLA_RECADOS,
-                    queries: [Query.limit(500)]
-                });
-                data.recados = resRecados.rows.map(r => ({
+                const resRecados = await databases.listDocuments(
+                    DB_ID,
+                    TABLA_RECADOS,
+                    [Query.limit(500)]
+                );
+                data.recados = resRecados.documents.map(r => ({
                     id: r.$id,
                     texto: r.texto || '',
                     completado: r.completado || false
@@ -539,9 +539,9 @@
             
             unsubscribeRealtime = realtime.subscribe(
                 [
-                    `databases.${DB_ID}.tables.${TABLA_PACIENTES}.rows`,
-                    `databases.${DB_ID}.tables.${TABLA_PENDIENTES}.rows`,
-                    `databases.${DB_ID}.tables.${TABLA_RECADOS}.rows`
+                    `databases.${DB_ID}.collections.${TABLA_PACIENTES}.documents`,
+                    `databases.${DB_ID}.collections.${TABLA_PENDIENTES}.documents`,
+                    `databases.${DB_ID}.collections.${TABLA_RECADOS}.documents`
                 ],
                 (response) => {
                     console.log('Cambio en tiempo real:', response.events);
@@ -892,12 +892,12 @@
 
         async function guardarTareasPaciente(pacienteId, tareas) {
             try {
-                await tablesDB.updateRow({
-                    databaseId: DB_ID,
-                    tableId: TABLA_PACIENTES,
-                    rowId: pacienteId,
-                    data: { tareas: JSON.stringify(tareas) }
-                });
+                await databases.updateDocument(
+                    DB_ID,
+                    TABLA_PACIENTES,
+                    pacienteId,
+                    { tareas: JSON.stringify(tareas) }
+                );
                 await cargarTodoDesdeAppwrite();
             } catch (error) {
                 console.error('Error guardando tareas:', error);
@@ -1027,7 +1027,7 @@
         }
 
         // =====================================================
-        // GUARDAR PACIENTE (Appwrite)
+        // GUARDAR PACIENTE (Appwrite v17)
         // =====================================================
         async function guardarPaciente(e) {
             e.preventDefault();
@@ -1052,11 +1052,11 @@
                     const pacienteActual = data.pacientes.find(p => p.id == id);
                     const tareasFinales = pacienteActual ? (pacienteActual.tareas || []) : [];
                     
-                    await tablesDB.updateRow({
-                        databaseId: DB_ID,
-                        tableId: TABLA_PACIENTES,
-                        rowId: id,
-                        data: {
+                    await databases.updateDocument(
+                        DB_ID,
+                        TABLA_PACIENTES,
+                        id,
+                        {
                             nombre: nombre,
                             cama: cama || null,
                             diagnostico: diagnostico,
@@ -1067,7 +1067,7 @@
                             pendienteOperar: pendienteOperar,
                             tareas: JSON.stringify(tareasFinales)
                         }
-                    });
+                    );
                     
                     const pendienteExistente = data.pendientes.find(
                         item => item.pacienteId === id && !item.completado
@@ -1075,44 +1075,44 @@
                     const ubicacion = cama ? `Cama ${cama}` : 'Sin cama';
                     
                     if (pendienteOperar && !pendienteExistente) {
-                        await tablesDB.createRow({
-                            databaseId: DB_ID,
-                            tableId: TABLA_PENDIENTES,
-                            rowId: ID.unique(),
-                            data: {
+                        await databases.createDocument(
+                            DB_ID,
+                            TABLA_PENDIENTES,
+                            ID.unique(),
+                            {
                                 texto: `${nombre} - ${sala} (${ubicacion}): ${diagnostico}`,
                                 sala: sala,
                                 cama: cama || null,
                                 completado: false,
                                 pacienteId: id
                             }
-                        });
+                        );
                     } else if (pendienteOperar && pendienteExistente) {
-                        await tablesDB.updateRow({
-                            databaseId: DB_ID,
-                            tableId: TABLA_PENDIENTES,
-                            rowId: pendienteExistente.id,
-                            data: {
+                        await databases.updateDocument(
+                            DB_ID,
+                            TABLA_PENDIENTES,
+                            pendienteExistente.id,
+                            {
                                 texto: `${nombre} - ${sala} (${ubicacion}): ${diagnostico}`,
                                 sala: sala,
                                 cama: cama || null
                             }
-                        });
+                        );
                     } else if (!pendienteOperar && pendienteExistente) {
-                        await tablesDB.deleteRow({
-                            databaseId: DB_ID,
-                            tableId: TABLA_PENDIENTES,
-                            rowId: pendienteExistente.id
-                        });
+                        await databases.deleteDocument(
+                            DB_ID,
+                            TABLA_PENDIENTES,
+                            pendienteExistente.id
+                        );
                     }
                 } else {
                     // CREAR
                     const nuevoId = ID.unique();
-                    await tablesDB.createRow({
-                        databaseId: DB_ID,
-                        tableId: TABLA_PACIENTES,
-                        rowId: nuevoId,
-                        data: {
+                    await databases.createDocument(
+                        DB_ID,
+                        TABLA_PACIENTES,
+                        nuevoId,
+                        {
                             nombre: nombre,
                             cama: cama || null,
                             diagnostico: diagnostico,
@@ -1126,22 +1126,22 @@
                             pendienteOperar: pendienteOperar,
                             tareas: JSON.stringify(tareasTemporales)
                         }
-                    });
+                    );
                     
                     if (pendienteOperar) {
                         const ubicacion = cama ? `Cama ${cama}` : 'Sin cama';
-                        await tablesDB.createRow({
-                            databaseId: DB_ID,
-                            tableId: TABLA_PENDIENTES,
-                            rowId: ID.unique(),
-                            data: {
+                        await databases.createDocument(
+                            DB_ID,
+                            TABLA_PENDIENTES,
+                            ID.unique(),
+                            {
                                 texto: `${nombre} - ${sala} (${ubicacion}): ${diagnostico}`,
                                 sala: sala,
                                 cama: cama || null,
                                 completado: false,
                                 pacienteId: nuevoId
                             }
-                        });
+                        );
                     }
                 }
                 
@@ -1181,7 +1181,7 @@
         }
 
         // =====================================================
-        // ACCIONES DE PACIENTES (Appwrite)
+        // ACCIONES DE PACIENTES (Appwrite v17)
         // =====================================================
         async function marcarParaOperar(id) {
             const p = data.pacientes.find(p => p.id == id);
@@ -1194,25 +1194,25 @@
             const ubicacion = p.cama ? `Cama ${p.cama}` : 'Sin cama';
             
             try {
-                await tablesDB.updateRow({
-                    databaseId: DB_ID,
-                    tableId: TABLA_PACIENTES,
-                    rowId: id,
-                    data: { pendienteOperar: true }
-                });
+                await databases.updateDocument(
+                    DB_ID,
+                    TABLA_PACIENTES,
+                    id,
+                    { pendienteOperar: true }
+                );
                 
-                await tablesDB.createRow({
-                    databaseId: DB_ID,
-                    tableId: TABLA_PENDIENTES,
-                    rowId: ID.unique(),
-                    data: {
+                await databases.createDocument(
+                    DB_ID,
+                    TABLA_PENDIENTES,
+                    ID.unique(),
+                    {
                         texto: `${p.nombre} - ${p.sala} (${ubicacion}): ${p.diagnostico}`,
                         sala: p.sala,
                         cama: p.cama || null,
                         completado: false,
                         pacienteId: id
                     }
-                });
+                );
                 
                 await cargarTodoDesdeAppwrite();
             } catch (error) {
@@ -1224,12 +1224,12 @@
         async function marcarFallecido(id) {
             if (!confirm('⚠️ ¿Marcar como fallecido?')) return;
             try {
-                await tablesDB.updateRow({
-                    databaseId: DB_ID,
-                    tableId: TABLA_PACIENTES,
-                    rowId: id,
-                    data: { fallecido: true }
-                });
+                await databases.updateDocument(
+                    DB_ID,
+                    TABLA_PACIENTES,
+                    id,
+                    { fallecido: true }
+                );
                 await cargarTodoDesdeAppwrite();
             } catch (error) {
                 console.error('Error:', error);
@@ -1241,21 +1241,21 @@
             if (!p) return;
             
             try {
-                await tablesDB.updateRow({
-                    databaseId: DB_ID,
-                    tableId: TABLA_PACIENTES,
-                    rowId: id,
-                    data: { egresado: !p.egresado }
-                });
+                await databases.updateDocument(
+                    DB_ID,
+                    TABLA_PACIENTES,
+                    id,
+                    { egresado: !p.egresado }
+                );
                 
                 if (!p.egresado) {
                     const pendientesAEliminar = data.pendientes.filter(item => item.pacienteId === id);
                     for (const pend of pendientesAEliminar) {
-                        await tablesDB.deleteRow({
-                            databaseId: DB_ID,
-                            tableId: TABLA_PENDIENTES,
-                            rowId: pend.id
-                        });
+                        await databases.deleteDocument(
+                            DB_ID,
+                            TABLA_PENDIENTES,
+                            pend.id
+                        );
                     }
                 }
                 await cargarTodoDesdeAppwrite();
@@ -1267,19 +1267,19 @@
         async function eliminarDefinitivo(id) {
             if (!confirm("¿Borrar permanentemente?")) return;
             try {
-                await tablesDB.deleteRow({
-                    databaseId: DB_ID,
-                    tableId: TABLA_PACIENTES,
-                    rowId: id
-                });
+                await databases.deleteDocument(
+                    DB_ID,
+                    TABLA_PACIENTES,
+                    id
+                );
                 
                 const pendientesAEliminar = data.pendientes.filter(item => item.pacienteId === id);
                 for (const pend of pendientesAEliminar) {
-                    await tablesDB.deleteRow({
-                        databaseId: DB_ID,
-                        tableId: TABLA_PENDIENTES,
-                        rowId: pend.id
-                    });
+                    await databases.deleteDocument(
+                        DB_ID,
+                        TABLA_PENDIENTES,
+                        pend.id
+                    );
                 }
                 await cargarTodoDesdeAppwrite();
             } catch (error) {
@@ -1296,27 +1296,27 @@
             const ubicacion = camaFinal ? `Cama ${camaFinal}` : 'Sin cama';
             
             try {
-                await tablesDB.updateRow({
-                    databaseId: DB_ID,
-                    tableId: TABLA_PACIENTES,
-                    rowId: id,
-                    data: { sala: nuevaSala, cama: camaFinal }
-                });
+                await databases.updateDocument(
+                    DB_ID,
+                    TABLA_PACIENTES,
+                    id,
+                    { sala: nuevaSala, cama: camaFinal }
+                );
                 
                 const pendienteExistente = data.pendientes.find(
                     item => item.pacienteId === id && !item.completado
                 );
                 if (pendienteExistente) {
-                    await tablesDB.updateRow({
-                        databaseId: DB_ID,
-                        tableId: TABLA_PENDIENTES,
-                        rowId: pendienteExistente.id,
-                        data: {
+                    await databases.updateDocument(
+                        DB_ID,
+                        TABLA_PENDIENTES,
+                        pendienteExistente.id,
+                        {
                             texto: `${p.nombre} - ${nuevaSala} (${ubicacion}): ${p.diagnostico}`,
                             sala: nuevaSala,
                             cama: camaFinal
                         }
-                    });
+                    );
                 }
                 await cargarTodoDesdeAppwrite();
             } catch (error) {
@@ -1436,7 +1436,7 @@
         }
 
         // =====================================================
-        // PENDIENTES (Appwrite)
+        // PENDIENTES (Appwrite v17)
         // =====================================================
         async function agregarPendiente(e) {
             e.preventDefault();
@@ -1455,18 +1455,18 @@
             
             const { ID } = Appwrite;
             try {
-                await tablesDB.createRow({
-                    databaseId: DB_ID,
-                    tableId: TABLA_PENDIENTES,
-                    rowId: ID.unique(),
-                    data: {
+                await databases.createDocument(
+                    DB_ID,
+                    TABLA_PENDIENTES,
+                    ID.unique(),
+                    {
                         texto: texto,
                         sala: sala || null,
                         cama: cama || null,
                         completado: false,
                         pacienteId: null
                     }
-                });
+                );
                 
                 document.getElementById('inputPendienteNombre').value = '';
                 document.getElementById('inputPendienteSala').value = '';
@@ -1496,12 +1496,12 @@
             if (!texto) { alert('Ingresa un texto.'); return; }
             
             try {
-                await tablesDB.updateRow({
-                    databaseId: DB_ID,
-                    tableId: TABLA_PENDIENTES,
-                    rowId: id,
-                    data: { texto: texto }
-                });
+                await databases.updateDocument(
+                    DB_ID,
+                    TABLA_PENDIENTES,
+                    id,
+                    { texto: texto }
+                );
                 await cargarTodoDesdeAppwrite();
                 cerrarModal('modalEditarPendiente');
             } catch (error) {
@@ -1521,25 +1521,25 @@
                 abrirModal('modalRegistrarOperacion');
             } else {
                 try {
-                    await tablesDB.updateRow({
-                        databaseId: DB_ID,
-                        tableId: TABLA_PENDIENTES,
-                        rowId: id,
-                        data: { completado: false }
-                    });
+                    await databases.updateDocument(
+                        DB_ID,
+                        TABLA_PENDIENTES,
+                        id,
+                        { completado: false }
+                    );
                     
                     if (item.pacienteId) {
-                        await tablesDB.updateRow({
-                            databaseId: DB_ID,
-                            tableId: TABLA_PACIENTES,
-                            rowId: item.pacienteId,
-                            data: {
+                        await databases.updateDocument(
+                            DB_ID,
+                            TABLA_PACIENTES,
+                            item.pacienteId,
+                            {
                                 operado: false,
                                 pendienteOperar: true,
                                 cirugiaRealizada: null,
                                 diagnosticoOperatorio: null
                             }
-                        });
+                        );
                     }
                     await cargarTodoDesdeAppwrite();
                 } catch (error) {
@@ -1556,30 +1556,30 @@
             if (!cirugia || !diagnosticoOp) { alert('Completa todos los campos.'); return; }
             
             try {
-                await tablesDB.updateRow({
-                    databaseId: DB_ID,
-                    tableId: TABLA_PENDIENTES,
-                    rowId: pendienteId,
-                    data: {
+                await databases.updateDocument(
+                    DB_ID,
+                    TABLA_PENDIENTES,
+                    pendienteId,
+                    {
                         completado: true,
                         cirugiaRealizada: cirugia,
                         diagnosticoOperatorio: diagnosticoOp
                     }
-                });
+                );
                 
                 const item = data.pendientes.find(i => i.id == pendienteId);
                 if (item && item.pacienteId) {
-                    await tablesDB.updateRow({
-                        databaseId: DB_ID,
-                        tableId: TABLA_PACIENTES,
-                        rowId: item.pacienteId,
-                        data: {
+                    await databases.updateDocument(
+                        DB_ID,
+                        TABLA_PACIENTES,
+                        item.pacienteId,
+                        {
                             operado: true,
                             pendienteOperar: false,
                             cirugiaRealizada: cirugia,
                             diagnosticoOperatorio: diagnosticoOp
                         }
-                    });
+                    );
                 }
                 
                 await cargarTodoDesdeAppwrite();
@@ -1595,24 +1595,24 @@
                 if (key === 'pendientes') {
                     const item = data.pendientes.find(i => i.id == id);
                     if (item && item.pacienteId) {
-                        await tablesDB.updateRow({
-                            databaseId: DB_ID,
-                            tableId: TABLA_PACIENTES,
-                            rowId: item.pacienteId,
-                            data: { pendienteOperar: false }
-                        });
+                        await databases.updateDocument(
+                            DB_ID,
+                            TABLA_PACIENTES,
+                            item.pacienteId,
+                            { pendienteOperar: false }
+                        );
                     }
-                    await tablesDB.deleteRow({
-                        databaseId: DB_ID,
-                        tableId: TABLA_PENDIENTES,
-                        rowId: id
-                    });
+                    await databases.deleteDocument(
+                        DB_ID,
+                        TABLA_PENDIENTES,
+                        id
+                    );
                 } else if (key === 'recados') {
-                    await tablesDB.deleteRow({
-                        databaseId: DB_ID,
-                        tableId: TABLA_RECADOS,
-                        rowId: id
-                    });
+                    await databases.deleteDocument(
+                        DB_ID,
+                        TABLA_RECADOS,
+                        id
+                    );
                 }
                 await cargarTodoDesdeAppwrite();
             } catch (error) {
@@ -1621,7 +1621,7 @@
         }
 
         // =====================================================
-        // RECADOS (Appwrite)
+        // RECADOS (Appwrite v17)
         // =====================================================
         async function agregarItem(e, key, inputId, modalId) {
             e.preventDefault();
@@ -1631,12 +1631,12 @@
             
             const { ID } = Appwrite;
             try {
-                await tablesDB.createRow({
-                    databaseId: DB_ID,
-                    tableId: TABLA_RECADOS,
-                    rowId: ID.unique(),
-                    data: { texto: texto, completado: false }
-                });
+                await databases.createDocument(
+                    DB_ID,
+                    TABLA_RECADOS,
+                    ID.unique(),
+                    { texto: texto, completado: false }
+                );
                 input.value = '';
                 await cargarTodoDesdeAppwrite();
                 cerrarModal(modalId);
@@ -1651,12 +1651,12 @@
             if (!item) return;
             
             try {
-                await tablesDB.updateRow({
-                    databaseId: DB_ID,
-                    tableId: TABLA_RECADOS,
-                    rowId: id,
-                    data: { completado: !item.completado }
-                });
+                await databases.updateDocument(
+                    DB_ID,
+                    TABLA_RECADOS,
+                    id,
+                    { completado: !item.completado }
+                );
                 await cargarTodoDesdeAppwrite();
             } catch (error) {
                 console.error('Error:', error);
@@ -1780,13 +1780,13 @@
             (async () => {
                 try {
                     for (const p of data.pacientes) {
-                        await tablesDB.deleteRow({ databaseId: DB_ID, tableId: TABLA_PACIENTES, rowId: p.id });
+                        await databases.deleteDocument(DB_ID, TABLA_PACIENTES, p.id);
                     }
                     for (const p of data.pendientes) {
-                        await tablesDB.deleteRow({ databaseId: DB_ID, tableId: TABLA_PENDIENTES, rowId: p.id });
+                        await databases.deleteDocument(DB_ID, TABLA_PENDIENTES, p.id);
                     }
                     for (const r of data.recados) {
-                        await tablesDB.deleteRow({ databaseId: DB_ID, tableId: TABLA_RECADOS, rowId: r.id });
+                        await databases.deleteDocument(DB_ID, TABLA_RECADOS, r.id);
                     }
                 } catch (e) { console.error(e); }
             })();
