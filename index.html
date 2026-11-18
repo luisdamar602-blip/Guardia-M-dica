@@ -8,11 +8,13 @@
 <title>Control de Guardia - Cirugía General</title>
 <link rel="manifest" href="./manifest.json">
 <link rel="apple-touch-icon" href="guard.png">
+<link rel="stylesheet" href="./css/styles.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js" defer></script>
+</head>
 <style>
 :root{
-  --primary:#0077b6;--primary-dark:#005f8a;--primary-light:#e8f4f8;
+ --primary:#0077b6;--primary-dark:#005f8a;--primary-light:#e8f4f8;
   --bg:#f0f4f8;--card-bg:#fff;--text:#1e293b;--text-light:#64748b;
   --border:#e2e8f0;--danger:#ef4444;--success:#22c55e;--warning:#f59e0b;
   --whatsapp:#25D366;--info:#0ea5e9;--operado:#8b5cf6;--polivalente:#ec4899;--sop:#14b8a6;
@@ -270,16 +272,13 @@ textarea{resize:vertical;min-height:50px;font-family:inherit}
   .campo-cama.oculto{display:block!important}
 }
 </style>
-</head>
 <body>
-
 <header>
   <div>
     <h1>🏥 Control Guardia</h1>
     <p>Cirugía General · <span id="ultimaActualizacion">Actualizado</span></p>
   </div>
   <div class="header-actions">
-      <button class="btn-icon success" onclick="enviarDatosPorWhatsApp()" title="Sincronizar por WhatsApp">💬</button>
     <div class="perfil-badge" onclick="abrirModalPerfilPrellenado()" id="perfilBadge">
       <div class="avatar" id="perfilAvatar">?</div>
       <span id="perfilNombre">Perfil</span>
@@ -853,6 +852,7 @@ function getFotosPaciente(pacienteId){return fotosCache.get(String(pacienteId))|
 /* ============================================================
    WHATSAPP SYNC (LZ-STRING)
 ============================================================ */
+// ✅ REEMPLAZA enviarDatosPorWhatsApp() CON ESTO:
 function enviarDatosPorWhatsApp() {
   const paquete = {
     _v: SCHEMA_VERSION,
@@ -864,23 +864,31 @@ function enviarDatosPorWhatsApp() {
   try {
     const jsonString = JSON.stringify(paquete);
     const comprimido = LZString.compressToEncodedURIComponent(jsonString);
-    const urlGitHub = window.location.origin + window.location.pathname;
-    const enlaceMagico = `${urlGitHub}#sync=${comprimido}`;
+    
+    // Elimina "index.html" para que coincida exactamente con el start_url de la PWA
+    const rutaBase = window.location.pathname.replace(/index\.html$/, '');
+    const urlGitHub = window.location.origin + rutaBase;
+    const enlaceMagico = `${urlGitHub}?sync=${comprimido}`;
 
-    const mensaje = `${enlaceMagico}`;
-
-    abrirWhatsApp(mensaje);
+    abrirWhatsApp(enlaceMagico);
   } catch (error) {
     console.error("Error al comprimir datos:", error);
     alert("⚠️ Error al generar el enlace. Demasiados datos para WhatsApp.");
   }
 }
 
+// ✅ REEMPLAZA comprobarSincronizacionURL() CON ESTO:
 function comprobarSincronizacionURL() {
+  const params = new URLSearchParams(window.location.search);
   const hash = window.location.hash;
-  if (hash && hash.startsWith('#sync=')) {
+  
+  let comprimido = params.get('sync');
+  if (!comprimido && hash && hash.startsWith('#sync=')) {
+    comprimido = hash.replace('#sync=', '');
+  }
+
+  if (comprimido) {
     try {
-      const comprimido = hash.replace('#sync=', '');
       const jsonString = LZString.decompressFromEncodedURIComponent(comprimido);
       if (!jsonString) throw new Error("No se pudo descomprimir el enlace.");
       
@@ -909,6 +917,7 @@ function comprobarSincronizacionURL() {
   }
   return false;
 }
+
 /* ============================================================
    SALAS / DATOS
 ============================================================ */
@@ -2573,14 +2582,17 @@ function abrirModal(id){
   if(menu && menu.style.display==='flex')toggleFabMenu();
   if(id==='modalPendiente')actualizarSelectPendienteSala();
   if(id==='modalRecado')actualizarSelectRecadoSala();
-  if(id==='modalPaciente'){
+  // ✅ CÓDIGO CORREGIDO EN abrirModal(id)
+if(id==='modalPaciente'){
+  if(!document.getElementById('editPacienteId').value){
     document.getElementById('pNombre').value = '';
     document.getElementById('pHistoriaClinica').value = '';
     document.getElementById('pEdad').value = '';
     document.getElementById('pSexo').value = '';
     document.getElementById('pPendienteOperar').checked = false;
-    toggleCampoCama();
   }
+  toggleCampoCama();
+}
 }
 function cerrarModal(id){
   const el = document.getElementById(id);
