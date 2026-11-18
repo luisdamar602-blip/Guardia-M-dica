@@ -1828,9 +1828,14 @@ function guardarPaciente(e){
       p.cama = cama||null;
       p.diagnostico = diagnostico;
       p.sala = sala;
-      if(sala!==salaAnterior)addTimeline(p,'cambio',`Movido de ${salaAnterior} a ${sala}`);
-      if(pendienteOperar)p.estado='ingreso_anterior';
-      else if(estado)p.estado=estado;
+            if(sala!==salaAnterior)addTimeline(p,'cambio',`Movido de ${salaAnterior} a ${sala}`);
+      
+      // Corrección: Si no está pendiente de operar, se respeta el estado seleccionado en el formulario
+      if(pendienteOperar) {
+        p.estado='ingreso_anterior';
+      } else {
+        p.estado = estado; // Asigna correctamente 'ingresado', 'observacion', etc.
+      }
       p.reporte = reporte;
       p.tipo = tipo;
       p.pendienteOperar = pendienteOperar;
