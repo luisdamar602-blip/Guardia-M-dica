@@ -1849,9 +1849,11 @@ function guardarPaciente(e){
     return;
   }
 
-  const estadoFinal = pendienteOperar?'ingreso_anterior':estado;
+    const estadoFinal = pendienteOperar?'ingreso_anterior':estado;
+  const timestampActual = Date.now(); // 👈 Aseguramos una fecha numérica válida y segura
+
   const nuevoPaciente = {
-    id: uid(),
+    id: String(timestampActual), // Forzamos que el ID y la fecha base sean correctos
     nombre,
     historiaClinica: historiaClinica||null,
     edad: edad?Number(edad):null,
@@ -1876,6 +1878,7 @@ function guardarPaciente(e){
     checklists:{},
     fotosCount:0
   };
+
   if(nuevoComentario){
     nuevoPaciente.comentarios.push({id:uid(),texto:nuevoComentario,fecha:Date.now(),autor:perfil.nombre||'Anónimo'});
   }
@@ -1887,7 +1890,7 @@ function guardarPaciente(e){
   guardarEnLocalStorage();
   renderizarTodo();
   cerrarModal('modalPaciente');
-}
+}  
 
 function prepararEdicion(id){
   const p = data.pacientes.find(p=>String(p.id)===String(id));
