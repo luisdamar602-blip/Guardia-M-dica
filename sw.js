@@ -1,7 +1,8 @@
 const CACHE_NAME = 'guardia-cirugia-v2';
 const ASSETS_TO_CACHE = [
   './index.html',
-  './manifest.json'
+  './manifest.json',
+  './guard.png'
 ];
 
 self.addEventListener('install', (event) => {
