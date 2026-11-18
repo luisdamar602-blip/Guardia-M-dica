@@ -1,0 +1,1165 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#0077b6">
+<title>Control de Guardia - Cirugía General</title>
+
+<!-- PWA: Manifest y Service Worker -->
+<link rel="manifest" href="manifest.json">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Guardia Cirugía">
+
+<!-- Librerías Externas -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js" defer></script>
+<!-- Librería de compresión para enlaces largos de WhatsApp -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lz-string/1.5.0/lz-string.min.js" defer></script>
+
+<style>
+:root{
+  --primary:#0077b6;--primary-dark:#005f8a;--primary-light:#e8f4f8;
+  --bg:#f0f4f8;--card-bg:#fff;--text:#1e293b;--text-light:#64748b;
+  --border:#e2e8f0;--danger:#ef4444;--success:#22c55e;--warning:#f59e0b;
+  --whatsapp:#25D366;--info:#0ea5e9;--operado:#8b5cf6;--polivalente:#ec4899;--sop:#14b8a6;
+  --estado-ingresado:#0077b6;--estado-observacion:#06b6d4;--estado-ingreso-anterior:#d97706;
+  --estado-operado:#8b5cf6;--estado-pendiente-op:#f97316;--estado-fallecido:#1e293b;
+  --grav-cuidado:#94a3b8;--grav-grave-estable:#a855f7;--grav-grave:#f59e0b;--grav-critico:#ef4444;
+  --shadow:0 2px 8px rgba(0,0,0,.08);--radius:12px;--safe-bottom:env(safe-area-inset-bottom,0px);
+}
+*{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Oxygen,Ubuntu,sans-serif;-webkit-tap-highlight-color:transparent}
+body{background:var(--bg);color:var(--text);padding:12px;padding-bottom:calc(80px + var(--safe-bottom));min-height:100vh;min-height:100dvh}
+
+header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;padding-bottom:12px;border-bottom:2px solid var(--border);flex-wrap:wrap;gap:8px}
+header h1{color:var(--primary);font-size:19px;font-weight:700;line-height:1.2}
+header p{font-size:11px;color:var(--text-light);margin-top:2px}
+.header-actions{display:flex;gap:5px;align-items:center;flex-wrap:wrap}
+.btn-icon{background:var(--primary);color:#fff;border:none;padding:6px 9px;border-radius:8px;font-size:11px;font-weight:600;cursor:pointer;white-space:nowrap;transition:all .2s}
+.btn-icon:active{transform:scale(.95)}
+.btn-icon.outline{background:transparent;color:var(--primary);border:1px solid var(--primary)}
+.btn-icon.danger{background:var(--danger)}
+.btn-icon.success{background:var(--success)}
+.btn-icon.warning{background:var(--warning)}
+
+.perfil-badge{display:flex;align-items:center;gap:6px;background:var(--primary-light);color:var(--primary-dark);padding:4px 10px;border-radius:20px;font-size:11px;font-weight:600;cursor:pointer}
+.perfil-badge .avatar{width:20px;height:20px;border-radius:50%;background:var(--primary);color:#fff;display:flex;align-items:center;justify-content:center;font-size:10px}
+
+.dashboard-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+.dash-card{background:var(--card-bg);border-radius:var(--radius);padding:10px 6px;box-shadow:var(--shadow);text-align:center;border:1px solid var(--border);transition:transform .15s}
+.dash-card:active{transform:scale(.95)}
+.dash-card .number{font-size:22px;font-weight:700;color:var(--primary);line-height:1.2}
+.dash-card .label{font-size:9px;color:var(--text-light);margin-top:2px;line-height:1.3}
+.dash-card.danger .number{color:var(--danger)}
+.dash-card.success .number{color:var(--success)}
+.dash-card.warning .number{color:var(--warning)}
+.dash-card.operado .number{color:var(--operado)}
+.dash-card.polivalente .number{color:var(--polivalente)}
+.dash-card.sop .number{color:var(--sop)}
+
+.tabs{display:flex;gap:6px;margin-bottom:14px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding-bottom:4px}
+.tabs::-webkit-scrollbar{display:none}
+.tab-btn{padding:8px 14px;border-radius:8px;cursor:pointer;font-weight:600;font-size:12px;transition:all .2s;background:var(--card-bg);color:var(--text-light);border:1px solid var(--border);white-space:nowrap;flex-shrink:0}
+.tab-btn:active{transform:scale(.95)}
+.tab-btn.active{background:var(--primary);color:#fff;border-color:var(--primary)}
+.tab-content{display:none}
+.tab-content.active{display:block}
+
+.search-container{margin-bottom:10px;display:flex;gap:6px;flex-wrap:wrap}
+.search-input{flex:1;padding:9px 12px;border:1px solid var(--border);border-radius:8px;font-size:13px;background:var(--card-bg);min-width:150px}
+.search-input:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(0,119,182,.1)}
+.filtro-toggle{background:var(--card-bg);border:1px solid var(--border);border-radius:8px;padding:8px 10px;font-size:12px;cursor:pointer;color:var(--text-light);white-space:nowrap}
+.filtro-toggle.active{background:var(--primary);color:#fff;border-color:var(--primary)}
+.filtros-panel{display:none;background:var(--card-bg);border:1px solid var(--border);border-radius:8px;padding:10px;margin-bottom:10px;flex-wrap:wrap;gap:8px}
+.filtros-panel.active{display:flex}
+.filtros-panel select,.filtros-panel input[type=date]{flex:1;min-width:110px;padding:7px;border:1px solid var(--border);border-radius:6px;font-size:12px;margin:0}
+
+.salas-container{display:flex;flex-direction:column;gap:12px}
+.sala-card{background:var(--card-bg);border:1px solid var(--border);border-radius:var(--radius);padding:12px;box-shadow:var(--shadow)}
+.sala-header{background:var(--primary-light);margin:-12px -12px 12px -12px;padding:10px 12px;border-top-left-radius:var(--radius);border-top-right-radius:var(--radius);font-weight:600;color:var(--primary-dark);display:flex;justify-content:space-between;align-items:center;font-size:14px}
+.sala-header .sala-count{font-size:11px;background:rgba(255,255,255,.6);padding:1px 10px;border-radius:12px;font-weight:500}
+
+.paciente-item{background:#f8fafc;border-left:4px solid var(--grav-cuidado);padding:10px 12px;margin-bottom:8px;border-radius:6px;position:relative;font-size:13px;transition:all .2s}
+.paciente-item:last-child{margin-bottom:0}
+.paciente-item.reporte-critico{border-left-color:var(--grav-critico);background:#fef2f2}
+.paciente-item.reporte-grave{border-left-color:var(--grav-grave);background:#fffbeb}
+.paciente-item.reporte-grave-estable{border-left-color:var(--grav-grave-estable);background:#faf5ff}
+.paciente-item.reporte-cuidado{border-left-color:var(--grav-cuidado);background:#f8fafc}
+.paciente-item.estado-observacion{border-left-color:var(--estado-observacion);background:#ecfeff}
+.paciente-item.estado-ingreso-anterior{border-left-color:var(--estado-ingreso-anterior);background:#fef3c7}
+.paciente-item.estado-operado{border-left-color:var(--estado-operado);background:#f5f3ff}
+.paciente-item.estado-pendiente-op{border-left-color:var(--estado-pendiente-op);background:#fff7ed}
+.paciente-item.estado-fallecido{border-left-color:var(--estado-fallecido);background:#f1f5f9;opacity:.75}
+.paciente-item.egresado{text-decoration:line-through;opacity:.5;background:#f1f5f9!important;border-left-color:#94a3b8!important}
+.paciente-item .p-name{font-weight:600;font-size:14px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.paciente-item .p-detail{color:var(--text-light);font-size:12px;margin-top:2px}
+.paciente-item .p-detail strong{color:var(--text)}
+.paciente-item .p-hc{font-size:11px;color:var(--text-light);margin-top:1px}
+.paciente-item .p-time{font-size:10px;color:var(--text-light);margin-top:2px}
+.paciente-item .p-nota{font-size:12px;color:var(--text);margin-top:4px;padding:6px 8px;background:rgba(14,165,233,.08);border-left:2px solid var(--info);border-radius:4px;white-space:pre-wrap;word-break:break-word}
+.fotos-mini{display:flex;gap:4px;margin-top:6px;flex-wrap:wrap}
+.foto-mini{width:44px;height:44px;border-radius:6px;object-fit:cover;border:2px solid var(--border);cursor:pointer}
+
+.badge{display:inline-block;padding:1px 8px;font-size:10px;font-weight:600;border-radius:4px;margin-top:4px;letter-spacing:.3px}
+.badge-cuidado{background:#e2e8f0;color:#475569}
+.badge-grave-estable{background:#f3e8ff;color:#6b21a8}
+.badge-grave{background:#fef3c7;color:#92400e}
+.badge-critico{background:#fee2e2;color:#991b1b}
+.badge-estado-ingresado{background:#dbeafe;color:#1e40af}
+.badge-estado-observacion{background:#cffafe;color:#155e75}
+.badge-estado-ingreso-anterior{background:#fef3c7;color:#92400e}
+.badge-estado-operado{background:#ede9fe;color:#5b21b6}
+.badge-estado-pendiente-op{background:#ffedd5;color:#9a3412}
+.badge-estado-fallecido{background:#1e293b;color:#fff}
+.badge-tipo{background:#e0f2fe;color:#0369a1}
+.badge-nota{background:#dbeafe;color:#1e40af;cursor:pointer}
+.badge-foto{background:#fce7f3;color:#9d174d;cursor:pointer}
+.actions-right{display:flex;gap:4px;flex-wrap:wrap;margin-top:6px;justify-content:flex-end;align-items:center}
+.btn-action{background:none;border:none;cursor:pointer;font-size:16px;padding:4px 6px;border-radius:4px}
+.btn-action:active{background:rgba(0,0,0,.05)}
+.select-transfer-rapido{font-size:11px;padding:4px 6px;margin-top:4px;width:auto;max-width:120px;border:1px solid var(--border);border-radius:4px;background:#fff}
+
+.task-list{list-style:none}
+.task-item{display:flex;justify-content:space-between;align-items:center;padding:8px;border-bottom:1px solid var(--border);font-size:13px;gap:8px}
+.task-item:last-child{border-bottom:none}
+.task-item.completed{text-decoration:line-through;color:#94a3b8;background:#f8fafc}
+.task-text{flex:1;word-break:break-word}
+.task-actions{display:flex;gap:2px;flex-shrink:0}
+.btn-task{background:none;border:none;cursor:pointer;font-size:16px;padding:2px 4px}
+.box-task{background:var(--card-bg);border:1px solid var(--border);border-radius:var(--radius);padding:12px;box-shadow:var(--shadow)}
+.box-task h2{font-size:15px;font-weight:600;color:var(--text);display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.stats-badge{background:var(--primary);color:#fff;padding:1px 10px;border-radius:12px;font-size:12px}
+
+.modal-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.5);display:none;justify-content:center;align-items:flex-end;z-index:1000;padding:16px;padding-bottom:calc(16px + env(safe-area-inset-bottom,0px));overflow-y:auto;-webkit-overflow-scrolling:touch}
+.modal-content{background:#fff;padding:20px;border-radius:var(--radius) var(--radius) 0 0;width:100%;max-width:500px;max-height:90vh;max-height:90dvh;overflow-y:auto;-webkit-overflow-scrolling:touch;animation:slideUp .3s ease-out;margin:0 auto;padding-bottom:calc(20px + env(safe-area-inset-bottom,0px))}
+@keyframes slideUp{from{transform:translateY(100%);opacity:0}to{transform:translateY(0);opacity:1}}
+.modal-close{position:sticky;top:0;float:right;font-size:24px;cursor:pointer;color:#94a3b8;background:#fff;padding:0 4px;z-index:1}
+.modal-content h2{font-size:18px;margin-bottom:16px;color:var(--primary)}
+
+body.keyboard-open{overflow:hidden!important;height:100dvh}
+body.keyboard-open .modal-content{max-height:100dvh!important;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:200px!important}
+body.keyboard-open .modal-overlay{align-items:flex-start!important;padding-top:8px!important;overflow-y:auto!important}
+.modal-content input,.modal-content textarea,.modal-content select{scroll-margin-top:100px;scroll-margin-bottom:200px}
+
+input,select,textarea{width:100%;padding:10px 12px;margin-bottom:10px;border:1px solid var(--border);border-radius:8px;font-size:14px;background:var(--card-bg);-webkit-appearance:none;appearance:none}
+textarea{resize:vertical;min-height:50px;font-family:inherit}
+.campo-cama{transition:all .3s ease;overflow:hidden}
+.campo-cama.oculto{max-height:0!important;opacity:0;margin:0!important;padding:0!important;pointer-events:none}
+
+.checkbox-group{display:flex;align-items:center;gap:12px;margin-bottom:10px;padding:10px 14px;background:#f8fafc;border-radius:8px;cursor:pointer;transition:background .2s;border:1px solid var(--border)}
+.checkbox-group:hover{background:#e8edf3}
+.checkbox-group input[type=checkbox]{display:none}
+.checkbox-group .checkmark{width:24px;height:24px;min-width:24px;background:#fff;border:2px solid #cbd5e1;border-radius:6px;display:flex;align-items:center;justify-content:center;transition:all .2s;flex-shrink:0}
+.checkbox-group input[type=checkbox]:checked + .checkmark{background:var(--primary);border-color:var(--primary)}
+.checkbox-group input[type=checkbox]:checked + .checkmark::after{content:"✓";color:#fff;font-size:18px;font-weight:700}
+.checkbox-group label{font-weight:500;color:var(--text);cursor:pointer;font-size:14px;flex:1;user-select:none}
+.form-row{display:flex;gap:8px}
+.form-row > *{flex:1}
+
+.btn-main{background:var(--primary);color:#fff;border:none;padding:12px;border-radius:8px;cursor:pointer;width:100%;font-weight:600;font-size:15px;transition:all .2s}
+.btn-main:active{transform:scale(.97)}
+.btn-main.btn-danger{background:var(--danger)}
+.btn-main.btn-success{background:var(--success)}
+.btn-main.btn-operado{background:var(--operado)}
+.btn-main.btn-warning{background:var(--warning)}
+.btn-main.btn-sm{padding:6px 12px;font-size:12px;width:auto}
+
+.floating-container{position:fixed;bottom:calc(20px + var(--safe-bottom));right:16px;display:flex;flex-direction:column-reverse;align-items:flex-end;gap:8px;z-index:999}
+.btn-floating{width:56px;height:56px;border-radius:50%;background:var(--primary);color:#fff;border:none;font-size:28px;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,.3);display:flex;justify-content:center;align-items:center;transition:all .2s}
+.btn-floating:active{transform:scale(.92)}
+.btn-floating.active{transform:rotate(135deg);background:var(--danger)}
+.floating-menu{display:none;flex-direction:column;gap:6px;margin-bottom:4px;width:100%}
+.btn-menu-item{background:#fff;color:var(--text);border:1px solid var(--border);padding:10px 16px;border-radius:20px;font-size:13px;font-weight:600;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.1);display:flex;align-items:center;gap:8px;transition:all .2s;width:100%;white-space:nowrap}
+.btn-menu-item:active{transform:scale(.97)}
+.btn-menu-report{background-color:var(--whatsapp)!important;color:#fff!important;border-color:#20ba5a!important}
+.btn-menu-pdf{background-color:#dc2626!important;color:#fff!important;border-color:#b91c1c!important}
+.btn-menu-entrante{background-color:#2563eb!important;color:#fff!important;border-color:#1d4ed8!important}
+
+#listaGeneralContainer{background:var(--card-bg);border-radius:var(--radius);padding:12px;border:1px solid var(--border);overflow-x:auto;-webkit-overflow-scrolling:touch}
+#listaGeneralContainer table{width:100%;border-collapse:collapse;font-size:12px;min-width:400px}
+#listaGeneralContainer th{text-align:left;padding:8px 6px;background:#f1f5f9;font-weight:600;color:var(--text-light);font-size:11px;text-transform:uppercase;letter-spacing:.5px;border-bottom:2px solid var(--border);position:sticky;top:0}
+#listaGeneralContainer td{padding:8px 6px;border-bottom:1px solid var(--border);vertical-align:middle}
+#listaGeneralContainer tr:last-child td{border-bottom:none}
+
+.timeline{position:relative;padding-left:24px;margin-top:8px}
+.timeline::before{content:'';position:absolute;left:8px;top:4px;bottom:4px;width:2px;background:var(--border)}
+.timeline-item{position:relative;padding:8px 0 8px 4px;font-size:12px}
+.timeline-item::before{content:'';position:absolute;left:-20px;top:12px;width:10px;height:10px;border-radius:50%;background:var(--primary);border:2px solid #fff;box-shadow:0 0 0 2px var(--border)}
+.timeline-item.tipo-comentario::before{background:var(--info)}
+.timeline-item.tipo-tarea::before{background:var(--success)}
+.timeline-item.tipo-operacion::before{background:var(--operado)}
+.timeline-item.tipo-cambio::before{background:var(--warning)}
+.timeline-item.tipo-ingreso::before{background:var(--primary)}
+.timeline-item .tl-fecha{font-size:10px;color:var(--text-light);font-weight:600}
+.timeline-item .tl-texto{color:var(--text);margin-top:2px;white-space:pre-wrap;word-break:break-word}
+
+.fotos-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:8px 0}
+.foto-card{position:relative;border-radius:8px;overflow:hidden;border:1px solid var(--border);background:#f8fafc}
+.foto-card img{width:100%;height:80px;object-fit:cover;display:block}
+.foto-card .foto-titulo{font-size:10px;padding:3px 5px;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.foto-card .foto-del{position:absolute;top:3px;right:3px;background:rgba(239,68,68,.9);color:#fff;border:none;border-radius:50%;width:22px;height:22px;font-size:12px;cursor:pointer;line-height:1}
+.foto-card .foto-tipo{position:absolute;bottom:24px;left:3px;background:rgba(0,0,0,.6);color:#fff;font-size:9px;padding:1px 5px;border-radius:3px}
+
+.checklist-item{display:flex;align-items:center;gap:8px;padding:6px 0;font-size:13px;border-bottom:1px solid var(--border)}
+.checklist-item:last-child{border-bottom:none}
+.checklist-item input[type=checkbox]{width:18px;height:18px;margin:0;flex-shrink:0;cursor:pointer}
+.checklist-item label{flex:1;cursor:pointer}
+
+.dosis-item{background:#f8fafc;border:1px solid var(--border);border-radius:8px;padding:8px;margin-bottom:6px;font-size:12px}
+.dosis-item .d-nombre{font-weight:600;color:var(--text)}
+.dosis-item .d-info{color:var(--text-light);font-size:11px;margin-top:2px}
+.dosis-item .d-proxima{color:var(--danger);font-weight:600;font-size:12px;margin-top:3px}
+.dosis-item .d-proxima.ok{color:var(--success)}
+
+.perfil-avatar{width:64px;height:64px;border-radius:50%;background:var(--primary);color:#fff;display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:700;margin:0 auto 10px}
+.stats-canvas-wrap{background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:12px;margin-bottom:12px;box-shadow:var(--shadow)}
+.stats-canvas-wrap canvas{max-height:220px}
+
+#fileInput{display:none!important;position:absolute;width:0;height:0;opacity:0;pointer-events:none}
+#fotoInput{display:none!important;position:absolute;width:0;height:0;opacity:0;pointer-events:none}
+
+@media print{
+  body{padding:20px!important;background:#fff!important}
+  .floating-container,.tabs,.search-container,.btn-icon,.btn-main,.btn-action,.actions-right,.header-actions,.modal-overlay,.perfil-badge,.filtro-toggle{display:none!important}
+  .salas-container{display:block!important}
+  .sala-card{break-inside:avoid;page-break-inside:avoid;margin-bottom:20px!important}
+  .dashboard-grid{display:grid!important;grid-template-columns:repeat(3,1fr)!important}
+  .tab-content{display:block!important}
+  #tab-lista{display:block!important}
+  .tab-btn{display:none!important}
+  .sala-header{background:#e8f4f8!important;-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
+  .badge{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
+  .paciente-item{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
+  #listaGeneralContainer{overflow:visible!important}
+  #listaGeneralContainer table{min-width:100%!important}
+  .campo-cama{display:block!important;max-height:none!important;opacity:1!important}
+  .campo-cama.oculto{display:block!important}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>🏥 Control Guardia</h1>
+    <p>Cirugía General · <span id="ultimaActualizacion">Actualizado</span></p>
+  </div>
+  <div class="header-actions">
+    <div class="perfil-badge" onclick="abrirModalPerfilPrellenado()" id="perfilBadge">
+      <div class="avatar" id="perfilAvatar">?</div>
+      <span id="perfilNombre">Perfil</span>
+    </div>
+    <button class="btn-icon success" onclick="enviarDatosPorWhatsApp()" title="Sincronizar por WhatsApp">💬</button>
+    <button class="btn-icon success" onclick="exportarDatos()" title="Exportar JSON">📤</button>
+    <button class="btn-icon warning" onclick="importarDatos()" title="Importar JSON">📥</button>
+    <button class="btn-icon outline" onclick="abrirModal('modalBackupCifrado')">🔐</button>
+    <button class="btn-icon outline" onclick="generarPDFInforme()">📄</button>
+    <button class="btn-icon danger" onclick="reiniciarGuardia()">🔄</button>
+    <button class="btn-icon" onclick="abrirModal('modalGestionSalas')">⚙️</button>
+  </div>
+</header>
+
+<div class="dashboard-grid" id="dashboardGrid">
+  <div class="dash-card"><div class="number" id="totalIngresos">0</div><div class="label">📥 Ingresos</div></div>
+  <div class="dash-card operado"><div class="number" id="totalCirugias">0</div><div class="label">🩸 Cirugías</div></div>
+  <div class="dash-card polivalente"><div class="number" id="totalPolivalente">0</div><div class="label">🏥 Polivalente</div></div>
+  <div class="dash-card danger"><div class="number" id="totalEmergencias">0</div><div class="label">🚨 Emergencias</div></div>
+  <div class="dash-card warning"><div class="number" id="totalGraves">0</div><div class="label">⚠️ Graves</div></div>
+  <div class="dash-card"><div class="number" id="totalFallecidos">0</div><div class="label">💔 Fallecidos</div></div>
+</div>
+
+<div class="tabs">
+  <button class="tab-btn active" onclick="cambiarTab('salas')">🏥 Salas</button>
+  <button class="tab-btn" onclick="cambiarTab('lista')">📋 Todos</button>
+  <button class="tab-btn" onclick="cambiarTab('pendientes')">⚡ Pendientes</button>
+  <button class="tab-btn" onclick="cambiarTab('recados')">📝 Recados</button>
+  <button class="tab-btn" onclick="cambiarTab('estadisticas')">📊 Stats</button>
+</div>
+
+<div id="tab-salas" class="tab-content active">
+  <div class="search-container">
+    <input type="text" id="globalSearch" class="search-input" placeholder="🔍 Buscar paciente..." oninput="filtrarPacientes()">
+    <button class="filtro-toggle" onclick="toggleFiltros()">⚙️ Filtros</button>
+  </div>
+  <div class="filtros-panel" id="filtrosPanel">
+    <select id="filtroEstado" onchange="filtrarPacientes()">
+      <option value="">Estado: todos</option>
+      <option value="ingresado">Ingresado</option>
+      <option value="observacion">Observación</option>
+      <option value="ingreso_anterior">Ingreso anterior</option>
+      <option value="operado">Operado</option>
+      <option value="pendiente_op">Pendiente op</option>
+      <option value="fallecido">Fallecido</option>
+    </select>
+    <select id="filtroReporte" onchange="filtrarPacientes()">
+      <option value="">Gravedad: todas</option>
+      <option value="de cuidado">De cuidado</option>
+      <option value="grave estable">Grave estable</option>
+      <option value="grave">Grave</option>
+      <option value="critico">Crítico</option>
+    </select>
+    <select id="filtroTipo" onchange="filtrarPacientes()">
+      <option value="">Tipo: todos</option>
+      <option value="Urgencia">Urgencia</option>
+      <option value="Electivo">Electivo</option>
+      <option value="Emergencia">Emergencia</option>
+    </select>
+    <select id="filtroSala" onchange="filtrarPacientes()"><option value="">Sala: todas</option></select>
+    <input type="date" id="filtroFecha" onchange="filtrarPacientes()" title="Desde fecha">
+    <select id="filtroExtra" onchange="filtrarPacientes()">
+      <option value="">Extra: ninguno</option>
+      <option value="tareas">Solo con tareas pendientes</option>
+      <option value="fotos">Solo con fotos</option>
+      <option value="comentarios">Solo con comentarios</option>
+    </select>
+  </div>
+  <div class="salas-container" id="salasContenedor"></div>
+</div>
+
+<div id="tab-lista" class="tab-content">
+  <div class="search-container">
+    <input type="text" id="globalSearchLista" class="search-input" placeholder="🔍 Buscar paciente..." oninput="filtrarListaGeneral()">
+  </div>
+  <div id="listaGeneralContainer"></div>
+</div>
+
+<div id="tab-pendientes" class="tab-content">
+  <div class="box-task">
+    <h2>⚡ Pendientes a Operar <span class="stats-badge" id="pendientesCount">0</span></h2>
+    <ul class="task-list" id="listaPendientes"></ul>
+    <button class="btn-main mt-8" onclick="abrirModal('modalPendiente')">➕ Añadir Pendiente</button>
+  </div>
+</div>
+
+<div id="tab-recados" class="tab-content">
+  <div class="box-task">
+    <h2>📝 Recados de la Guardia <span class="stats-badge" id="recadosCount">0</span></h2>
+    <ul class="task-list" id="listaRecados"></ul>
+    <button class="btn-main mt-8" onclick="abrirModal('modalRecado')">➕ Añadir Recado</button>
+  </div>
+</div>
+
+<div id="tab-estadisticas" class="tab-content">
+  <div class="stats-canvas-wrap">
+    <h3 style="font-size:14px;margin-bottom:8px;color:var(--primary);">📊 Pacientes por sala</h3>
+    <canvas id="chartSalas"></canvas>
+  </div>
+  <div class="stats-canvas-wrap">
+    <h3 style="font-size:14px;margin-bottom:8px;color:var(--primary);">⚠️ Distribución por gravedad</h3>
+    <canvas id="chartGravedad"></canvas>
+  </div>
+  <div class="stats-canvas-wrap">
+    <h3 style="font-size:14px;margin-bottom:8px;color:var(--primary);">🩸 Actividad de guardia</h3>
+    <div id="statsResumen" style="font-size:13px;line-height:1.8;"></div>
+  </div>
+</div>
+
+<div class="floating-container">
+  <button class="btn-floating" id="mainFab" onclick="toggleFabMenu()">+</button>
+  <div class="floating-menu" id="fabMenu">
+    <button class="btn-menu-item" onclick="enviarDatosPorWhatsApp()" style="background:#25D366;color:#fff;">💬 Sincronizar por WhatsApp</button>
+    <button class="btn-menu-item btn-menu-report" onclick="enviarInformeGuardia()">📋 Informe Guardia</button>
+    <button class="btn-menu-item btn-menu-entrante" onclick="enviarInformeEntrante()">📋 Informe Entrante</button>
+    <button class="btn-menu-item" onclick="abrirModal('modalPaciente')">📥 Añadir Paciente</button>
+    <button class="btn-menu-item" onclick="abrirModal('modalPendiente')">⚡ Pendiente a Operar</button>
+    <button class="btn-menu-item" onclick="abrirModal('modalRecado')">📝 Añadir Recado</button>
+  </div>
+</div>
+
+<input type="file" id="fileInput" accept=".json" onchange="procesarImportacion(event)">
+<input type="file" id="fotoInput" accept="image/*" capture="environment" onchange="procesarFoto(event)">
+
+<!-- MODAL: GESTIÓN SALAS -->
+<div class="modal-overlay" id="modalGestionSalas" onclick="cerrarModalAfuera(event,'modalGestionSalas')">
+  <div class="modal-content">
+    <span class="modal-close" onclick="cerrarModal('modalGestionSalas')">&times;</span>
+    <h2>⚙️ Gestionar Salas</h2>
+    <div style="display:flex;gap:8px;margin-bottom:12px;">
+      <input type="text" id="inputNuevaSala" placeholder="Nueva sala" style="flex:1;margin-bottom:0;">
+      <button class="btn-main" style="width:auto;padding:10px 16px;" onclick="agregarSala()">➕</button>
+    </div>
+    <div id="listaSalasGestion"></div>
+    <p style="font-size:11px;color:var(--text-light);margin-top:8px;">🔄 Arrastra las salas para reordenarlas</p>
+  </div>
+</div>
+
+<!-- MODAL: EDITAR SALA -->
+<div class="modal-overlay" id="modalEditarSala" onclick="cerrarModalAfuera(event,'modalEditarSala')">
+  <div class="modal-content">
+    <span class="modal-close" onclick="cerrarModal('modalEditarSala')">&times;</span>
+    <h2>✏️ Renombrar Sala</h2>
+    <input type="hidden" id="editSalaNombreAntiguo">
+    <input type="text" id="editSalaNuevoNombre" placeholder="Nuevo nombre">
+    <button class="btn-main" onclick="renombrarSala()">Actualizar</button>
+  </div>
+</div>
+
+<!-- MODAL: PACIENTE -->
+<div class="modal-overlay" id="modalPaciente" onclick="cerrarModalAfuera(event,'modalPaciente')">
+  <div class="modal-content">
+    <span class="modal-close" onclick="cerrarModal('modalPaciente')">&times;</span>
+    <h2 id="modalPacienteTitulo">📥 Añadir Paciente</h2>
+    <form id="pacienteForm" onsubmit="guardarPaciente(event)">
+      <input type="hidden" id="editPacienteId">
+      <input type="text" id="pNombre" placeholder="Nombre completo (opcional)">
+      <div class="form-row">
+        <input type="text" id="pHistoriaClinica" placeholder="Nº HC (opcional)">
+        <input type="number" id="pEdad" placeholder="Edad" min="0" max="120">
+      </div>
+      <select id="pSexo">
+        <option value="">Sexo (opcional)</option>
+        <option value="M">Masculino</option>
+        <option value="F">Femenino</option>
+      </select>
+      <select id="pSala" required onchange="toggleCampoCama()">
+        <option value="" disabled selected>Seleccionar Sala</option>
+      </select>
+      <div id="campoCamaWrapper" class="campo-cama">
+        <input type="number" id="pCama" placeholder="Número de Cama (opcional)" min="1">
+      </div>
+      <div style="font-size:12px;color:var(--text-light);margin:-5px 0 10px 0;">
+        <span id="camaLabel">💡 Opcional - solo para referencia</span>
+      </div>
+      <input type="text" id="pDiagnostico" placeholder="Diagnóstico u Operación" required>
+      <div class="checkbox-group" onclick="toggleCheckbox(event)">
+        <input type="checkbox" id="pPendienteOperar">
+        <span class="checkmark"></span>
+        <label for="pPendienteOperar">⚡ Pendiente a Operar</label>
+      </div>
+      <select id="pEstado" required>
+        <option value="ingresado">🏥 Ingresado</option>
+        <option value="observacion">🔍 En Observación</option>
+        <option value="ingreso_anterior">📋 Ingreso Anterior</option>
+      </select>
+      <select id="pReporte" required>
+        <option value="de cuidado">De cuidado</option>
+        <option value="grave estable">Grave estable</option>
+        <option value="grave">Grave</option>
+        <option value="critico">Crítico</option>
+      </select>
+      <select id="pTipo" required>
+        <option value="Urgencia">Urgencia</option>
+        <option value="Electivo">Electivo</option>
+        <option value="Emergencia">Emergencia</option>
+      </select>
+
+      <hr style="border:none;border-top:2px dashed var(--border);margin:12px 0;">
+      <div style="margin-bottom:8px;">
+        <label style="font-weight:600;font-size:14px;color:var(--text);display:block;margin-bottom:6px;">💬 Comentarios / Notas</label>
+        <textarea id="pNuevoComentario" placeholder="Ej: Alergia a penicilina..." rows="3"></textarea>
+        <button type="button" class="btn-main btn-sm mt-8" style="width:100%;margin-bottom:10px;" onclick="añadirComentarioPaciente()">➕ Añadir comentario</button>
+        <div id="pComentariosHistorial" class="comentarios-historial">
+          <div class="comentario-vacio">Sin comentarios previos</div>
+        </div>
+      </div>
+
+      <hr style="border:none;border-top:2px dashed var(--border);margin:12px 0;">
+      <div style="margin-bottom:8px;">
+        <label style="font-weight:600;font-size:14px;color:var(--text);">📋 Tareas Pendientes</label>
+        <div class="add-tarea-row">
+          <input type="text" id="pNuevaTarea" placeholder="Escribe una tarea...">
+          <button type="button" class="btn-main btn-sm" onclick="añadirTareaPaciente()">➕</button>
+        </div>
+        <div id="pListaTareas" style="margin-top:8px;"></div>
+      </div>
+
+      <button type="submit" class="btn-main" id="btnSubmitPaciente">Admitir Paciente</button>
+    </form>
+  </div>
+</div>
+
+<!-- MODAL: PENDIENTE -->
+<div class="modal-overlay" id="modalPendiente" onclick="cerrarModalAfuera(event,'modalPendiente')">
+  <div class="modal-content">
+    <span class="modal-close" onclick="cerrarModal('modalPendiente')">&times;</span>
+    <h2>⚡ Nuevo Pendiente</h2>
+    <form onsubmit="agregarPendiente(event)">
+      <input type="text" id="inputPendienteNombre" placeholder="Nombre del paciente (opcional)">
+      <input type="text" id="inputPendienteHC" placeholder="Nº HC (opcional)">
+      <div style="display:flex;gap:8px;">
+        <select id="inputPendienteSala" style="flex:1;"><option value="" disabled selected>Sala</option></select>
+        <input type="number" id="inputPendienteCama" placeholder="Cama (opcional)" style="flex:1;">
+      </div>
+      <input type="text" id="inputPendienteDiagnostico" placeholder="Diagnóstico / Procedimiento" required>
+      <button type="submit" class="btn-main">Añadir</button>
+    </form>
+  </div>
+</div>
+
+<!-- MODAL: EDITAR PENDIENTE -->
+<div class="modal-overlay" id="modalEditarPendiente" onclick="cerrarModalAfuera(event,'modalEditarPendiente')">
+  <div class="modal-content">
+    <span class="modal-close" onclick="cerrarModal('modalEditarPendiente')">&times;</span>
+    <h2>✏️ Editar Pendiente</h2>
+    <input type="hidden" id="editPendienteId">
+    <input type="text" id="editPendienteTexto" required>
+    <button class="btn-main" onclick="guardarEdicionPendiente()">Actualizar</button>
+  </div>
+</div>
+
+<!-- MODAL: REGISTRAR OPERACIÓN -->
+<div class="modal-overlay" id="modalRegistrarOperacion" onclick="cerrarModalAfuera(event,'modalRegistrarOperacion')">
+  <div class="modal-content">
+    <span class="modal-close" onclick="cerrarModal('modalRegistrarOperacion')">&times;</span>
+    <h2>🩸 Registrar Operación</h2>
+    <input type="hidden" id="operacionPendienteId">
+    <input type="text" id="opCirugia" placeholder="Cirugía realizada" required>
+    <input type="text" id="opDiagnostico" placeholder="Diagnóstico operatorio" required>
+    <textarea id="opComentarios" placeholder="Comentarios de la operación (opcional)" rows="4"></textarea>
+    <div style="margin:8px 0;padding:8px 12px;background:#f0fdf4;border-radius:6px;border-left:3px solid var(--success);font-size:13px;color:var(--text-light);">
+      ℹ️ Registrando para: <span id="opPendienteTexto" style="font-weight:600;color:var(--text);">-</span>
+    </div>
+    <div class="form-row">
+      <button class="btn-main btn-operado" onclick="registrarOperacion()">✅ Registrar</button>
+      <button class="btn-main btn-danger" onclick="cerrarModal('modalRegistrarOperacion')">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: RECADO -->
+<div class="modal-overlay" id="modalRecado" onclick="cerrarModalAfuera(event,'modalRecado')">
+  <div class="modal-content">
+    <span class="modal-close" onclick="cerrarModal('modalRecado')">&times;</span>
+    <h2>📝 Nuevo Recado</h2>
+    <form onsubmit="agregarRecado(event)">
+      <input type="text" id="inputRecado" placeholder="Ej: Revisar drenaje Cama 4" required>
+      <select id="inputRecadoSala"><option value="" selected>Sin sala (opcional)</option></select>
+      <button type="submit" class="btn-main">Añadir</button>
+    </form>
+  </div>
+</div>
+
+<!-- MODAL: TAREAS -->
+<div class="modal-overlay" id="modalVerTareas" onclick="cerrarModalAfuera(event,'modalVerTareas')">
+  <div class="modal-content">
+    <span class="modal-close" onclick="cerrarModal('modalVerTareas')">&times;</span>
+    <h2 id="modalTareasTitulo">📋 Tareas Pendientes</h2>
+    <input type="hidden" id="modalTareasPacienteId">
+    <div id="modalTareasLista" class="modal-tareas-list"></div>
+    <div class="add-tarea-row">
+      <input type="text" id="modalNuevaTarea" placeholder="Añadir tarea...">
+      <button type="button" class="btn-main btn-sm" onclick="añadirTareaDesdeModal()">➕</button>
+    </div>
+    <button class="btn-main mt-8" onclick="cerrarModal('modalVerTareas')">Cerrar</button>
+  </div>
+</div>
+
+<!-- MODAL: COMENTARIOS -->
+<div class="modal-overlay" id="modalVerComentarios" onclick="cerrarModalAfuera(event,'modalVerComentarios')">
+  <div class="modal-content">
+    <span class="modal-close" onclick="cerrarModal('modalVerComentarios')">&times;</span>
+    <h2 id="modalComentariosTitulo">💬 Comentarios</h2>
+    <input type="hidden" id="modalComentariosPacienteId">
+    <div id="modalComentariosLista" class="comentarios-historial" style="max-height:300px;"></div>
+    <textarea id="modalNuevoComentario" placeholder="Añadir nuevo comentario..." rows="3"></textarea>
+    <button type="button" class="btn-main mt-8" onclick="añadirComentarioDesdeModal()">➕ Añadir comentario</button>
+    <button class="btn-main mt-8" onclick="cerrarModal('modalVerComentarios')">Cerrar</button>
+  </div>
+</div>
+
+<!-- MODAL: EDITAR COMENTARIO -->
+<div class="modal-overlay" id="modalEditarComentario" onclick="cerrarModalAfuera(event,'modalEditarComentario')">
+  <div class="modal-content">
+    <span class="modal-close" onclick="cerrarModal('modalEditarComentario')">&times;</span>
+    <h2>✏️ Editar Comentario</h2>
+    <input type="hidden" id="editComentarioPacienteId">
+    <input type="hidden" id="editComentarioId">
+    <textarea id="editComentarioTexto" rows="4"></textarea>
+    <div class="form-row">
+      <button class="btn-main" onclick="guardarEdicionComentario()">✅ Guardar</button>
+      <button class="btn-main btn-danger" onclick="cerrarModal('modalEditarComentario')">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: FOTOS -->
+<div class="modal-overlay" id="modalVerFotos" onclick="cerrarModalAfuera(event,'modalVerFotos')">
+  <div class="modal-content">
+    <span class="modal-close" onclick="cerrarModal('modalVerFotos')">&times;</span>
+    <h2 id="modalFotosTitulo">📸 Fotos del Paciente</h2>
+    <input type="hidden" id="modalFotosPacienteId">
+    <div class="fotos-grid" id="modalFotosGrid"></div>
+    <button class="btn-main mt-8" onclick="abrirCamaraFotos()">📷 Añadir foto</button>
+    <button class="btn-main mt-8" onclick="cerrarModal('modalVerFotos')">Cerrar</button>
+  </div>
+</div>
+
+<!-- MODAL: TIMELINE -->
+<div class="modal-overlay" id="modalVerTimeline" onclick="cerrarModalAfuera(event,'modalVerTimeline')">
+  <div class="modal-content">
+    <span class="modal-close" onclick="cerrarModal('modalVerTimeline')">&times;</span>
+    <h2 id="modalTimelineTitulo">🕐 Evolución del Paciente</h2>
+    <div id="modalTimelineContenido" class="timeline"></div>
+    <button class="btn-main mt-8" onclick="cerrarModal('modalVerTimeline')">Cerrar</button>
+  </div>
+</div>
+
+<!-- MODAL: CHECKLIST -->
+<div class="modal-overlay" id="modalChecklist" onclick="cerrarModalAfuera(event,'modalChecklist')">
+  <div class="modal-content">
+    <span class="modal-close" onclick="cerrarModal('modalChecklist')">&times;</span>
+    <h2 id="modalChecklistTitulo">📋 Checklist</h2>
+    <input type="hidden" id="checklistPacienteId">
+    <select id="checklistPlantilla" onchange="renderizarChecklist()">
+      <option value="preop">Pre-operatorio</option>
+      <option value="postop">Post-operatorio</option>
+      <option value="alta">Alta</option>
+    </select>
+    <div id="checklistContenido"></div>
+    <button class="btn-main mt-8" onclick="cerrarModal('modalChecklist')">Cerrar</button>
+  </div>
+</div>
+
+<!-- MODAL: DOSIS -->
+<div class="modal-overlay" id="modalDosis" onclick="cerrarModalAfuera(event,'modalDosis')">
+  <div class="modal-content">
+    <span class="modal-close" onclick="cerrarModal('modalDosis')">&times;</span>
+    <h2>💊 Medicación y Próxima Dosis</h2>
+    <input type="hidden" id="dosisPacienteId">
+    <input type="text" id="dosisMedicamento" placeholder="Medicamento (ej: Cefazolina 1g)">
+    <select id="dosisFrecuencia">
+      <option value="6">Cada 6 horas</option>
+      <option value="8">Cada 8 horas</option>
+      <option value="12">Cada 12 horas</option>
+      <option value="24">Cada 24 horas</option>
+    </select>
+    <label style="font-size:12px;color:var(--text-light);display:block;margin-bottom:4px;">Hora de última dosis</label>
+    <input type="datetime-local" id="dosisUltima">
+    <button class="btn-main" onclick="añadirDosis()">Añadir medicación</button>
+    <div id="dosisLista" style="margin-top:12px;"></div>
+    <button class="btn-main mt-8" onclick="cerrarModal('modalDosis')">Cerrar</button>
+  </div>
+</div>
+
+<!-- MODAL: PERFIL -->
+<div class="modal-overlay" id="modalPerfil" onclick="cerrarModalAfuera(event,'modalPerfil')">
+  <div class="modal-content">
+    <span class="modal-close" onclick="cerrarModal('modalPerfil')">&times;</span>
+    <h2>👤 Mi Perfil</h2>
+    <div class="perfil-avatar" id="perfilAvatarModal">?</div>
+    <input type="text" id="perfilNombreInput" placeholder="Nombre completo" maxlength="40">
+    <select id="perfilRol">
+      <option value="R1">R1 - Residente 1</option>
+      <option value="R2">R2 - Residente 2</option>
+      <option value="R3">R3 - Residente 3</option>
+      <option value="R4">R4 - Residente 4</option>
+      <option value="Adjunto">Adjunto</option>
+      <option value="Jefe">Jefe de Servicio</option>
+    </select>
+    <button class="btn-main" onclick="guardarPerfil()">💾 Guardar</button>
+    <div style="font-size:11px;color:var(--text-light);margin-top:10px;">
+      ℹ️ Tu nombre se firmará en cada comentario y tarea que crees.
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: BACKUP CIFRADO -->
+<div class="modal-overlay" id="modalBackupCifrado" onclick="cerrarModalAfuera(event,'modalBackupCifrado')">
+  <div class="modal-content">
+    <span class="modal-close" onclick="cerrarModal('modalBackupCifrado')">&times;</span>
+    <h2>🔐 Backup Cifrado</h2>
+    <p style="font-size:12px;color:var(--text-light);margin-bottom:10px;">
+      Descarga tu guardia cifrada con contraseña. Solo con la misma contraseña podrás restaurarla.
+    </p>
+    <input type="password" id="backupPassword" placeholder="Contraseña (mín. 6 caracteres)">
+    <input type="password" id="backupPassword2" placeholder="Repetir contraseña">
+    <button class="btn-main" onclick="exportarCifrado()">📤 Exportar cifrado</button>
+    <hr style="border:none;border-top:1px dashed var(--border);margin:14px 0;">
+    <p style="font-size:12px;color:var(--text-light);margin-bottom:10px;">
+      Restaurar desde un archivo cifrado:
+    </p>
+    <input type="password" id="restorePassword" placeholder="Contraseña del backup">
+    <button class="btn-main btn-warning" onclick="importarCifrado()">📥 Seleccionar archivo</button>
+    <input type="file" id="fileInputCifrado" accept=".json" style="display:none" onchange="procesarImportacionCifrada(event)">
+  </div>
+</div>
+
+<!-- MODAL: EPICRISIS -->
+<div class="modal-overlay" id="modalEpicrisis" onclick="cerrarModalAfuera(event,'modalEpicrisis')">
+  <div class="modal-content">
+    <span class="modal-close" onclick="cerrarModal('modalEpicrisis')">&times;</span>
+    <h2>🖨️ Generar Epicrisis</h2>
+    <input type="hidden" id="epicrisisPacienteId">
+    <p style="font-size:12px;color:var(--text-light);margin-bottom:10px;">
+      Se generará un PDF con datos del paciente, evolución, tareas y fotos.
+    </p>
+    <label style="display:flex;align-items:center;gap:8px;font-size:13px;margin-bottom:8px;cursor:pointer;">
+      <input type="checkbox" id="epicrisisIncluirFotos" checked style="width:18px;height:18px;margin:0;">
+      Incluir anexo fotográfico
+    </label>
+    <label style="display:flex;align-items:center;gap:8px;font-size:13px;margin-bottom:12px;cursor:pointer;">
+      <input type="checkbox" id="epicrisisIncluirComentarios" checked style="width:18px;height:18px;margin:0;">
+      Incluir evolución completa
+    </label>
+    <button class="btn-main" onclick="generarEpicrisis()">📄 Generar PDF</button>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   CONFIG GLOBAL
+============================================================ */
+const SCHEMA_VERSION = 8;
+const STORAGE_KEY = 'guardiaCirugiaData';
+const PERFIL_KEY = 'guardiaPerfil';
+const DB_NAME = 'guardiaDB';
+const DB_VERSION = 1;
+const STORE_FOTOS = 'fotos';
+
+let listadoSalas = [];
+let data = { _v: SCHEMA_VERSION, pacientes: [], pendientes: [], recados: [], guardiaInicio: null };
+let tareasTemporales = [];
+let comentariosTemporales = [];
+let perfil = { nombre: '', rol: 'R2' };
+
+const SALAS_SIN_CAMA = ['Cuerpo de Guardia','Sala de Espera','Quirófano','Reanimación'];
+
+/* ============================================================
+   UTILIDADES
+============================================================ */
+function esc(s){if(s==null)return'';return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function uid(){return crypto.randomUUID ? crypto.randomUUID() : Date.now()+'-'+Math.random().toString(36).slice(2);}
+function formatHora(ts){try{return new Date(Number(ts)).toLocaleString('es-ES',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});}catch(e){return'';}}
+function getDiagnosticoMostrar(p){if(p.operado&&p.diagnosticoOperatorio)return p.diagnosticoOperatorio;return p.diagnostico||'Sin diagnóstico';}
+function actualizarTimestampUI(){const el=document.getElementById('ultimaActualizacion');if(el)el.textContent='Actualizado '+new Date().toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'});}
+function getEstadoItemClasses(p){const c=[];if(p.egresado)return'egresado';if(p.fallecido)c.push('estado-fallecido');else if(p.pendienteOperar)c.push('estado-pendiente-op');else if(p.operado)c.push('estado-operado');else if(p.estado==='observacion')c.push('estado-observacion');else if(p.estado==='ingreso_anterior')c.push('estado-ingreso-anterior');return c.join(' ');}
+function getGravedadItemClass(p){if(p.reporte==='critico')return'reporte-critico';if(p.reporte==='grave')return'reporte-grave';if(p.reporte==='grave estable')return'reporte-grave-estable';return'reporte-cuidado';}
+function getEstadoBadge(p){
+  if(p.fallecido)return`<span class="badge badge-estado-fallecido">💔 FALLECIDO</span>`;
+  if(p.egresado)return`<span class="badge badge-estado-fallecido">✖ EGRESADO</span>`;
+  if(p.pendienteOperar)return`<span class="badge badge-estado-pendiente-op">⚡ PEND. OP</span>`;
+  if(p.operado)return`<span class="badge badge-estado-operado">✅ OPERADO</span>`;
+  if(p.estado==='observacion')return`<span class="badge badge-estado-observacion">🔍 OBS</span>`;
+  if(p.estado==='ingreso_anterior')return`<span class="badge badge-estado-ingreso-anterior">📋 ING ANT</span>`;
+  return`<span class="badge badge-estado-ingresado">🏥 ING</span>`;
+}
+
+/* ============================================================
+   INDEXEDDB (fotos)
+============================================================ */
+let db = null;
+function abrirDB(){
+  return new Promise((resolve,reject)=>{
+    if(db){resolve(db);return;}
+    const req = indexedDB.open(DB_NAME, DB_VERSION);
+    req.onupgradeneeded = e => {
+      const d = e.target.result;
+      if(!d.objectStoreNames.contains(STORE_FOTOS)){
+        const store = d.createObjectStore(STORE_FOTOS, {keyPath:'id'});
+        store.createIndex('pacienteId','pacienteId',{unique:false});
+      }
+    };
+    req.onsuccess = e => { db = e.target.result; resolve(db); };
+    req.onerror = e => reject(e.target.error);
+  });
+}
+async function dbGuardarFoto(foto){
+  const d = await abrirDB();
+  return new Promise((res,rej)=>{
+    const tx = d.transaction(STORE_FOTOS,'readwrite');
+    tx.objectStore(STORE_FOTOS).put(foto);
+    tx.oncomplete = ()=>res();
+    tx.onerror = e=>rej(e.target.error);
+  });
+}
+async function dbObtenerTodasFotos(){
+  const d = await abrirDB();
+  return new Promise((res,rej)=>{
+    const tx = d.transaction(STORE_FOTOS,'readonly');
+    const req = tx.objectStore(STORE_FOTOS).getAll();
+    req.onsuccess = ()=>res(req.result||[]);
+    req.onerror = e=>rej(e.target.error);
+  });
+}
+
+const fotosCache = new Map();
+async function cargarFotosCache(){
+  const todas = await dbObtenerTodasFotos();
+  fotosCache.clear();
+  todas.forEach(f=>{
+    const pIdStr = String(f.pacienteId);
+    if(!fotosCache.has(pIdStr))fotosCache.set(pIdStr,[]);
+    fotosCache.get(pIdStr).push(f);
+  });
+}
+function getFotosPaciente(pacienteId){return fotosCache.get(String(pacienteId))||[];}
+
+/* ============================================================
+   SALAS / DATOS
+============================================================ */
+function cargarSalas(){
+  const s = localStorage.getItem('guardiaSalas');
+  if(s){try{listadoSalas=JSON.parse(s);if(!Array.isArray(listadoSalas))throw 0;}catch(e){listadoSalas=["1A","1B","UCI-E","SOP","UCI-A","UCI-B","Polivalente","Cuerpo de Guardia"];guardarSalas();}}
+  else{listadoSalas=["1A","1B","UCI-E","SOP","UCI-A","UCI-B","Polivalente","Cuerpo de Guardia"];guardarSalas();}
+}
+function guardarSalas(){try{localStorage.setItem('guardiaSalas',JSON.stringify(listadoSalas));}catch(e){}}
+
+function cargarPerfil(){
+  const p = localStorage.getItem(PERFIL_KEY);
+  if(p){try{perfil=JSON.parse(p);}catch(e){}}
+  actualizarPerfilUI();
+}
+function guardarPerfilLocal(){localStorage.setItem(PERFIL_KEY,JSON.stringify(perfil));actualizarPerfilUI();}
+function actualizarPerfilUI(){
+  const badge = document.getElementById('perfilBadge');
+  const av = document.getElementById('perfilAvatar');
+  const nm = document.getElementById('perfilNombre');
+  if(!badge)return;
+  if(perfil.nombre){
+    av.textContent = perfil.nombre.charAt(0).toUpperCase();
+    nm.textContent = perfil.nombre.split(' ')[0]+' ('+perfil.rol+')';
+    badge.style.display = 'flex';
+  } else {
+    av.textContent='?';nm.textContent='Configurar';
+  }
+}
+
+function migrarDatos(d,v){
+  if(!d.pacientes)d.pacientes=[];
+  if(!d.pendientes)d.pendientes=[];
+  if(!d.recados)d.recados=[];
+  if(!d.guardiaInicio)d.guardiaInicio=null;
+  d.pacientes.forEach(p=>{
+    p.id = String(p.id);
+    if(!Array.isArray(p.comentarios))p.comentarios=[];
+    if(!Array.isArray(p.tareas))p.tareas=[];
+    if(!Array.isArray(p.dosis))p.dosis=[];
+    if(!p.timeline)p.timeline=[];
+    if(!p.checklists)p.checklists={};
+  });
+  d._v = SCHEMA_VERSION;
+  return d;
+}
+function cargarDatos(){
+  const raw = localStorage.getItem(STORAGE_KEY);
+  if(!raw)return;
+  try{
+    const parsed = JSON.parse(raw);
+    if((parsed._v||5)<SCHEMA_VERSION){data=migrarDatos(parsed,parsed._v||5);guardarEnLocalStorage();}
+    else data=parsed;
+  }catch(e){console.error('Error cargando:',e);}
+}
+function guardarEnLocalStorage(){
+  data._v=SCHEMA_VERSION;
+  try{localStorage.setItem(STORAGE_KEY,JSON.stringify(data));actualizarTimestampUI();}
+  catch(e){if(e.name==='QuotaExceededError')alert('⚠️ Almacenamiento lleno.');}
+}
+
+/* ============================================================
+   WHATSAPP SYNC (LZ-STRING)
+============================================================ */
+function enviarDatosPorWhatsApp() {
+  const paquete = {
+    _v: SCHEMA_VERSION,
+    salas: listadoSalas,
+    data: data,
+    t: Date.now()
+  };
+
+  try {
+    const jsonString = JSON.stringify(paquete);
+    const comprimido = LZString.compressToEncodedURIComponent(jsonString);
+    const urlGitHub = window.location.origin + window.location.pathname;
+    const enlaceMagico = `${urlGitHub}#sync=${comprimido}`;
+
+    const mensaje = `🏥 *SYNC GUARDIA CIRUGÍA*\n` +
+                    `📅 ${new Date().toLocaleString('es-ES', {day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit'})}\n` +
+                    `👥 Pacientes activos: ${data.pacientes.filter(p => !p.egresado).length}\n\n` +
+                    `👇 *Toca el enlace para cargar los datos en tu app:*\n` +
+                    `${enlaceMagico}`;
+
+    abrirWhatsApp(mensaje);
+  } catch (error) {
+    console.error("Error al comprimir datos:", error);
+    alert("⚠️ Error al generar el enlace. Demasiados datos para WhatsApp.");
+  }
+}
+
+function comprobarSincronizacionURL() {
+  const hash = window.location.hash;
+  if (hash && hash.startsWith('#sync=')) {
+    try {
+      const comprimido = hash.replace('#sync=', '');
+      const jsonString = LZString.decompressFromEncodedURIComponent(comprimido);
+      if (!jsonString) throw new Error("No se pudo descomprimir el enlace.");
+      
+      const paquete = JSON.parse(jsonString);
+
+      if (paquete && paquete.data && Array.isArray(paquete.salas)) {
+        const fechaEnvio = paquete.t ? new Date(paquete.t).toLocaleTimeString('es-ES', {hour:'2-digit', minute:'2-digit'}) : '';
+        
+        if (confirm(`📥 Se recibieron datos de guardia por WhatsApp (${fechaEnvio}).\n\n¿Deseas reemplazar los datos actuales con los recibidos?`)) {
+          listadoSalas = paquete.salas;
+          data = migrarDatos(paquete.data, paquete.data._v || SCHEMA_VERSION);
+          guardarSalas();
+          guardarEnLocalStorage();
+          history.replaceState(null, document.title, window.location.pathname);
+          alert("✅ ¡Guardia actualizada correctamente!");
+          return true;
+        } else {
+          history.replaceState(null, document.title, window.location.pathname);
+        }
+      }
+    } catch (e) {
+      console.error("Error en sincronización:", e);
+      alert("❌ El enlace de WhatsApp está incompleto o dañado.");
+      history.replaceState(null, document.title, window.location.pathname);
+    }
+  }
+  return false;
+}
+
+function abrirWhatsApp(texto){
+  const encoded = encodeURIComponent(texto.trim());
+  window.open(`https://wa.me/?text=${encoded}`,'_blank');
+  const menu = document.getElementById('fabMenu');
+  if(menu && menu.style.display==='flex')toggleFabMenu();
+}
+
+/* ============================================================
+   INICIALIZACIÓN
+============================================================ */
+window.addEventListener('DOMContentLoaded', async () => {
+  cargarSalas();
+  cargarPerfil();
+  
+  const huboSincronizacion = comprobarSincronizacionURL();
+  if (!huboSincronizacion) {
+    cargarDatos();
+  }
+
+  try { await cargarFotosCache(); } catch(e) { console.error('IndexedDB error:',e); }
+  renderizarTodo();
+  mostrarGestionSalas();
+  toggleCampoCama();
+});
+
+function renderizarTodo(){
+  renderizarSalas();
+  renderizarLista('pendientes','listaPendientes');
+  renderizarLista('recados','listaRecados');
+  actualizarSelectSalas();
+  actualizarSelectPendienteSala();
+  actualizarSelectRecadoSala();
+  actualizarSelectFiltroSala();
+  mostrarGestionSalas();
+  actualizarContadores();
+  actualizarDashboard();
+  renderizarListaGeneral();
+  if(document.getElementById('tab-estadisticas') && document.getElementById('tab-estadisticas').classList.contains('active'))renderizarStats();
+  actualizarTimestampUI();
+}
+
+/* ============================================================
+   OTRAS FUNCIONES CLAVE DE UI Y DATOS
+============================================================ */
+function toggleCampoCama(){
+  const sel = document.getElementById('pSala');
+  const wr = document.getElementById('campoCamaWrapper');
+  const inp = document.getElementById('pCama');
+  const lbl = document.getElementById('camaLabel');
+  if(!sel)return;
+  const ocultar = SALAS_SIN_CAMA.includes(sel.value) || sel.value==='';
+  if(ocultar){wr.classList.add('oculto');inp.value='';lbl.textContent='⏺ No se requiere cama';}
+  else{wr.classList.remove('oculto');lbl.textContent='💡 Opcional';}
+}
+
+function actualizarContadores(){
+  const pc = document.getElementById('pendientesCount');
+  const rc = document.getElementById('recadosCount');
+  if(pc)pc.textContent = data.pendientes.filter(i=>!i.completado).length;
+  if(rc)rc.textContent = data.recados.filter(i=>!i.completado).length;
+}
+
+function actualizarDashboard(){
+  const ne = data.pacientes.filter(p=>!p.egresado);
+  const el = id => document.getElementById(id);
+  if(el('totalIngresos'))el('totalIngresos').textContent = ne.filter(p=>p.estado==='ingresado').length;
+  if(el('totalCirugias'))el('totalCirugias').textContent = ne.filter(p=>p.operado).length;
+  if(el('totalPolivalente'))el('totalPolivalente').textContent = ne.filter(p=>p.sala==='Polivalente').length;
+  if(el('totalEmergencias'))el('totalEmergencias').textContent = ne.filter(p=>p.tipo==='Emergencia').length;
+  if(el('totalGraves'))el('totalGraves').textContent = ne.filter(p=>p.reporte==='grave'||p.reporte==='critico').length;
+  if(el('totalFallecidos'))el('totalFallecidos').textContent = data.pacientes.filter(p=>p.fallecido).length;
+}
+
+function toggleFabMenu(){
+  const m = document.getElementById('fabMenu');
+  const f = document.getElementById('mainFab');
+  if(m.style.display==='flex'){m.style.display='none';f.classList.remove('active');}
+  else{m.style.display='flex';f.classList.add('active');}
+}
+
+function abrirModal(id){
+  const el = document.getElementById(id);
+  if(!el)return;
+  el.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+  const menu = document.getElementById('fabMenu');
+  if(menu && menu.style.display==='flex')toggleFabMenu();
+}
+
+function cerrarModal(id){
+  const el = document.getElementById(id);
+  if(el)el.style.display = 'none';
+  document.body.style.overflow = '';
+}
+
+function cerrarModalAfuera(e,id){
+  if(e.target === document.getElementById(id))cerrarModal(id);
+}
+
+function cambiarTab(tab){
+  document.querySelectorAll('.tab-content').forEach(el=>el.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(el=>el.classList.remove('active'));
+  const map = {salas:0,lista:1,pendientes:2,recados:3,estadisticas:4};
+  const i = map[tab]||0;
+  const btns = document.querySelectorAll('.tab-btn');
+  if(btns[i])btns[i].classList.add('active');
+  const tc = document.getElementById('tab-'+tab);
+  if(tc)tc.classList.add('active');
+  if(tab==='lista')renderizarListaGeneral();
+  if(tab==='estadisticas')setTimeout(renderizarStats,100);
+}
+
+function exportarDatos(){
+  const datos = {version:'1.0',schemaVersion:SCHEMA_VERSION,fechaExportacion:new Date().toISOString(),salas:listadoSalas,data};
+  const json = JSON.stringify(datos,null,2);
+  const blob = new Blob([json],{type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `guardia_cirugia_${new Date().toISOString().slice(0,10)}.json`;
+  document.body.appendChild(a);a.click();document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+function importarDatos(){document.getElementById('fileInput').click();}
+function procesarImportacion(event){
+  const file = event.target.files[0];
+  if(!file)return;
+  const reader = new FileReader();
+  reader.onload = function(e){
+    try{
+      const datos = JSON.parse(e.target.result);
+      if(!confirm('⚠️ ¿Importar datos? Se reemplazarán TODOS los datos actuales.'))return;
+      listadoSalas = datos.salas;
+      data = migrarDatos(datos.data,datos.data._v||5);
+      guardarSalas();
+      guardarEnLocalStorage();
+      renderizarTodo();
+      alert('✅ Datos importados correctamente.');
+    }catch(err){alert('❌ Error al leer el archivo: '+err.message);}
+    finally{event.target.value='';}
+  };
+  reader.readAsText(file);
+}
+
+function reiniciarGuardia(){
+  if(!confirm('⚠️ ¿REINICIAR la guardia?\nSe eliminarán TODOS los pacientes, pendientes y recados.'))return;
+  data = {_v:SCHEMA_VERSION,pacientes:[],pendientes:[],recados:[],guardiaInicio:Date.now()};
+  guardarEnLocalStorage();
+  renderizarTodo();
+  alert('✅ Guardia reiniciada correctamente.');
+}
+
+// Renderizado simple de salas y elementos para mantener operativo el DOM completo
+function renderizarSalas(){
+  const contenedor = document.getElementById('salasContenedor');
+  if(!contenedor)return;
+  contenedor.innerHTML = '';
+  listadoSalas.forEach(sala=>{
+    const pacientesSala = data.pacientes.filter(p => p.sala === sala && !p.egresado);
+    const salaDiv = document.createElement('div');
+    salaDiv.className = 'sala-card';
+    let html = `<div class="sala-header"><span>🏥 ${esc(sala)}</span><span class="sala-count">${pacientesSala.length} pacientes</span></div><div>`;
+    if(pacientesSala.length===0){
+      html += `<p class="text-center text-muted" style="padding:10px;font-size:13px;">Sin pacientes</p>`;
+    } else {
+      pacientesSala.forEach(p=>{
+        html += `<div class="paciente-item" style="padding:8px; margin-bottom:6px; background:#fff; border-radius:6px; border-left:4px solid var(--primary);"><strong>${esc(p.nombre)}</strong> - ${esc(p.diagnostico)}</div>`;
+      });
+    }
+    html += `</div>`;
+    salaDiv.innerHTML = html;
+    contenedor.appendChild(salaDiv);
+  });
+}
+function renderizarListaGeneral(){}
+function renderizarLista(k,id){}
+function actualizarSelectSalas(){}
+function actualizarSelectPendienteSala(){}
+function actualizarSelectRecadoSala(){}
+function actualizarSelectFiltroSala(){}
+function mostrarGestionSalas(){}
+function filtrarPacientes(){}
+function filtrarListaGeneral(){}
+function renderizarStats(){}
+
+/* ============================================================
+   REGISTRO DEL SERVICE WORKER Y BOTÓN DE INSTALACIÓN PWA
+============================================================ */
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js')
+            .then((reg) => console.log('✅ Service Worker registrado:', reg.scope))
+            .catch((err) => console.warn('⚠️ Service Worker no registrado:', err));
+    });
+}
+
+let deferredPrompt = null;
+
+window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+
+    if (document.getElementById('btn-instalar-pwa')) return;
+
+    const btn = document.createElement('button');
+    btn.id = 'btn-instalar-pwa';
+    btn.innerHTML = '📲 Instalar aplicación';
+    btn.style.cssText = `
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background: #0b2b4a;
+        color: white;
+        border: none;
+        padding: 14px 22px;
+        border-radius: 30px;
+        font-size: 0.95rem;
+        font-weight: 600;
+        font-family: 'Segoe UI', sans-serif;
+        cursor: pointer;
+        box-shadow: 0 6px 24px rgba(0,0,0,0.35);
+        z-index: 99998;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        transition: 0.2s;
+    `;
+    btn.onmouseover = () => btn.style.transform = 'scale(1.05)';
+    btn.onmouseout = () => btn.style.transform = 'scale(1)';
+
+    btn.addEventListener('click', async () => {
+        if (!deferredPrompt) return;
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        if (outcome === 'accepted') {
+            localStorage.setItem('pwa_instalada', 'true');
+        }
+        deferredPrompt = null;
+        btn.remove();
+    });
+
+    document.body.appendChild(btn);
+});
+
+window.addEventListener('appinstalled', () => {
+    localStorage.setItem('pwa_instalada', 'true');
+    const btn = document.getElementById('btn-instalar-pwa');
+    if (btn) btn.remove();
+    deferredPrompt = null;
+});
+</script>
+</body>
+</html>
