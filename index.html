@@ -1829,14 +1829,8 @@ function guardarPaciente(e){
       p.diagnostico = diagnostico;
       p.sala = sala;
             if(sala!==salaAnterior)addTimeline(p,'cambio',`Movido de ${salaAnterior} a ${sala}`);
-      
-      // Corrección: Si no está pendiente de operar, se respeta el estado seleccionado en el formulario
-      if(pendienteOperar) {
-        p.estado='ingreso_anterior';
-      } else {
-        p.estado = estado; // Asigna correctamente 'ingresado', 'observacion', etc.
-      }
-      p.reporte = reporte;
+if(estado)p.estado=estado; // ⬅️ Respeta siempre el estado seleccionado
+p.reporte = reporte;
       p.tipo = tipo;
       p.pendienteOperar = pendienteOperar;
       if(nuevoComentario){
@@ -1863,7 +1857,7 @@ function guardarPaciente(e){
     return;
   }
 
-    const estadoFinal = pendienteOperar?'ingreso_anterior':estado;
+    const estadoFinal = estado; // ⬅️ Usa el estado que elegiste en el formulario
   const timestampActual = Date.now(); // 👈 Aseguramos una fecha numérica válida y segura
 
   const nuevoPaciente = {
@@ -1941,12 +1935,11 @@ function marcarParaOperar(id){
   const ubicacion = p.cama?`Cama ${p.cama}`:'Sin cama';
   data.pendientes.push({id:uid(),texto:`${p.nombre} - ${p.sala} (${ubicacion}): ${p.diagnostico}`,sala:p.sala,cama:p.cama||null,completado:false,pacienteId:p.id});
   p.pendienteOperar = true;
-  p.estado = 'ingreso_anterior';
+  // p.estado = 'ingreso_anterior'; ⬅️ Eliminado
   addTimeline(p,'cambio','Marcado para operar');
   guardarEnLocalStorage();
   renderizarTodo();
 }
-
 function marcarFallecido(id){
   if(!confirm('⚠️ ¿Marcar como fallecido?'))return;
   const p = data.pacientes.find(p=>String(p.id)===String(id));
