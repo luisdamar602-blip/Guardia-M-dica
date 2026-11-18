@@ -866,11 +866,7 @@ function enviarDatosPorWhatsApp() {
     const urlGitHub = window.location.origin + window.location.pathname;
     const enlaceMagico = `${urlGitHub}#sync=${comprimido}`;
 
-    const mensaje = `🏥 *SYNC GUARDIA CIRUGÍA*\n` +
-                    `📅 ${new Date().toLocaleString('es-ES', {day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit'})}\n` +
-                    `👥 Pacientes activos: ${data.pacientes.filter(p => !p.egresado).length}\n\n` +
-                    `👇 *Toca el enlace para cargar los datos en tu app:*\n` +
-                    `${enlaceMagico}`;
+    const mensaje = `${enlaceMagico}`;
 
     abrirWhatsApp(mensaje);
   } catch (error) {
