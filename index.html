@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="theme-color" content="#0077b6">
 <title>Control de Guardia - Cirugía General</title>
-<link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22Guardia%20Cirug%C3%ADa%22%2C%22short_name%22%3A%22Guardia%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%23f0f4f8%22%2C%22theme_color%22%3A%22%230077b6%22%7D">
+<link rel="manifest" href="./manifest.json">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js" defer></script>
 <style>
@@ -1164,29 +1164,33 @@ function añadirDosis(){
   if(!p)return;
   const med = document.getElementById('dosisMedicamento').value.trim();
   const freq = Number(document.getElementById('dosisFrecuencia').value);
-  const ultima = document.getElementById('dosisUltima').value;
+  const ultimaStr = document.getElementById('dosisUltima').value;
+  
   if(!med){alert('Indica el medicamento');return;}
+  
+  // Validación estricta para evitar "fecha inválida"
+  let ultimaTimestamp = Date.now();
+  if(ultimaStr) {
+    const parsedDate = new Date(ultimaStr).getTime();
+    if(!isNaN(parsedDate)) {
+      ultimaTimestamp = parsedDate;
+    }
+  }
+
   if(!Array.isArray(p.dosis))p.dosis=[];
-  p.dosis.push({id:uid(),medicamento:med,frecuenciaHoras:freq,ultimaDosis:ultima?new Date(ultima).getTime():Date.now()});
+  p.dosis.push({
+    id: uid(),
+    medicamento: med,
+    frecuenciaHoras: freq,
+    ultimaDosis: ultimaTimestamp
+  });
+  
   guardarEnLocalStorage();
   document.getElementById('dosisMedicamento').value='';
   document.getElementById('dosisUltima').value='';
   renderizarDosisPaciente(id);
 }
-function marcarDosisAhora(pacienteId,idx){
-  const p = data.pacientes.find(x=>String(x.id)===String(pacienteId));
-  if(!p||!p.dosis[idx])return;
-  p.dosis[idx].ultimaDosis = Date.now();
-  guardarEnLocalStorage();
-  renderizarDosisPaciente(pacienteId);
-}
-function eliminarDosis(pacienteId,idx){
-  const p = data.pacientes.find(x=>String(x.id)===String(pacienteId));
-  if(!p||!p.dosis)return;
-  p.dosis.splice(idx,1);
-  guardarEnLocalStorage();
-  renderizarDosisPaciente(pacienteId);
-}
+
 
 /* ============================================================
    CHECKLIST
