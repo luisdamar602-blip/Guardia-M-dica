@@ -295,6 +295,7 @@ textarea{resize:vertical;min-height:50px;font-family:inherit}
     <input type="text" id="ghPath" placeholder="Ruta del archivo (ej: datos-guardia.json)">
     <input type="password" id="ghToken" placeholder="Personal Access Token (permiso repo)">
     <div class="form-row">
+        <button type="button" class="btn-main btn-operado" onclick="subirDatosAGitHub(true)">⬆️ Subir ahora</button>
       <button type="button" class="btn-main btn-success" onclick="guardarYProbarGitHub()">💾 Guardar y Sincronizar</button>
       <button type="button" class="btn-main" onclick="descargarDesdeGitHub(true)">🔄 Refrescar</button>
     </div>
