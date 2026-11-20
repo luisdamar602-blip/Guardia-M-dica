@@ -287,17 +287,18 @@ textarea{resize:vertical;min-height:50px;font-family:inherit}
   <div class="modal-content">
     <span class="modal-close" onclick="cerrarModal('modalSyncGitHub')">&times;</span>
     <h2>☁️ Sincronización GitHub</h2>
+    <p id="ghModoBanner" style="font-size:12px;font-weight:600;padding:8px 10px;border-radius:8px;margin-bottom:10px;background:#e0f2fe;color:#0369a1;"></p>
     <p style="font-size:12px;color:var(--text-light);margin-bottom:10px;">
-      Guarda y descarga automáticamente los datos de la guardia en un archivo JSON dentro de tu repositorio.
+      Sin token: solo lectura (descarga desde el repo). Con token: lectura y escritura (sube cambios).
     </p>
     <input type="text" id="ghOwner" placeholder="Usuario u organización de GitHub">
     <input type="text" id="ghRepo" placeholder="Nombre del repositorio (ej: guardia-cirugia)">
     <input type="text" id="ghPath" placeholder="Ruta del archivo (ej: datos-guardia.json)">
-    <input type="password" id="ghToken" placeholder="Personal Access Token (permiso repo)">
+    <input type="password" id="ghToken" placeholder="Personal Access Token (opcional para solo lectura)">
     <div class="form-row">
-        <button type="button" class="btn-main btn-operado" onclick="subirDatosAGitHub(true)">⬆️ Subir ahora</button>
-      <button type="button" class="btn-main btn-success" onclick="guardarYProbarGitHub()">💾 Guardar y Sincronizar</button>
-      <button type="button" class="btn-main" onclick="descargarDesdeGitHub(true)">🔄 Refrescar</button>
+      <button type="button" id="btnGhSubir" class="btn-main btn-operado" onclick="subirDatosAGitHub(true)">⬆️ Subir ahora</button>
+      <button type="button" id="btnGhGuardar" class="btn-main btn-success" onclick="guardarYProbarGitHub()">💾 Guardar y Sincronizar</button>
+      <button type="button" id="btnGhRefrescar" class="btn-main" onclick="descargarDesdeGitHub(true)">🔄 Refrescar</button>
     </div>
     <p id="ghEstadoTexto" style="font-size:11px;color:var(--text-light);margin-top:10px;"></p>
   </div>
@@ -1031,11 +1032,74 @@ function cargarConfigGitHub() {
   actualizarBadgeGitHub();
 }
 
+function tienePermisoEdicionGitHub() {
+  return Boolean(ghConfig.owner && ghConfig.repo && ghConfig.path && ghConfig.token);
+}
+
+function tieneConfigLecturaGitHub() {
+  return Boolean(ghConfig.owner && ghConfig.repo && ghConfig.path);
+}
+
 function actualizarBadgeGitHub() {
   const btn = document.getElementById('btnSyncGitHub');
   if (!btn) return;
-  const conectado = Boolean(ghConfig.owner && ghConfig.repo && ghConfig.path && ghConfig.token);
-  btn.textContent = ghSubiendo ? '⏳ Sync...' : (conectado ? '☁️ Sync OK' : '☁️ GitHub');
+  const puedeEditar = tienePermisoEdicionGitHub();
+  const puedeLeer = tieneConfigLecturaGitHub();
+
+  if (ghSubiendo) {
+    btn.textContent = '⏳ Sync...';
+  } else if (puedeEditar) {
+    btn.textContent = '☁️ Sync (Edición)';
+  } else if (puedeLeer) {
+    btn.textContent = '👁️ Sync (Solo lectura)';
+  } else {
+    btn.textContent = '☁️ GitHub';
+  }
+}
+
+function actualizarEstadoModalGitHub() {
+  const tokenActual = (document.getElementById('ghToken')?.value ?? ghConfig.token ?? '').trim();
+  const ownerActual = (document.getElementById('ghOwner')?.value ?? ghConfig.owner ?? '').trim();
+  const repoActual = (document.getElementById('ghRepo')?.value ?? ghConfig.repo ?? '').trim();
+  const pathActual = (document.getElementById('ghPath')?.value ?? ghConfig.path ?? '').trim();
+
+  const tieneConfigBase = Boolean(ownerActual && repoActual && pathActual);
+  const esEdicion = Boolean(tieneConfigBase && tokenActual);
+
+  const banner = document.getElementById('ghModoBanner');
+  const btnSubir = document.getElementById('btnGhSubir');
+  const btnGuardar = document.getElementById('btnGhGuardar');
+  const btnRefrescar = document.getElementById('btnGhRefrescar');
+
+  if (banner) {
+    if (esEdicion) {
+      banner.style.background = '#dcfce7';
+      banner.style.color = '#166534';
+      banner.textContent = '✏️ Modo Edición activo: puedes descargar y subir cambios a GitHub.';
+    } else {
+      banner.style.background = '#fef3c7';
+      banner.style.color = '#92400e';
+      banner.textContent = '👁️ Modo Solo Lectura: sin token solo podrás descargar/refrescar datos.';
+    }
+  }
+
+  if (btnSubir) {
+    btnSubir.disabled = !esEdicion;
+    btnSubir.style.opacity = esEdicion ? '1' : '0.45';
+    btnSubir.style.cursor = esEdicion ? 'pointer' : 'not-allowed';
+  }
+
+  if (btnGuardar) {
+    btnGuardar.disabled = !esEdicion;
+    btnGuardar.style.opacity = esEdicion ? '1' : '0.45';
+    btnGuardar.style.cursor = esEdicion ? 'pointer' : 'not-allowed';
+  }
+
+  if (btnRefrescar) {
+    btnRefrescar.disabled = !tieneConfigBase;
+    btnRefrescar.style.opacity = tieneConfigBase ? '1' : '0.45';
+    btnRefrescar.style.cursor = tieneConfigBase ? 'pointer' : 'not-allowed';
+  }
 }
 
 function abrirModalSyncGitHub() {
@@ -1043,9 +1107,18 @@ function abrirModalSyncGitHub() {
   document.getElementById('ghRepo').value = ghConfig.repo || '';
   document.getElementById('ghPath').value = ghConfig.path || 'datos-guardia.json';
   document.getElementById('ghToken').value = ghConfig.token || '';
+
+  ['ghOwner', 'ghRepo', 'ghPath', 'ghToken'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.oninput = actualizarEstadoModalGitHub;
+  });
+
+  const modoTexto = tienePermisoEdicionGitHub() ? 'Modo Edición' : 'Modo Solo Lectura';
   document.getElementById('ghEstadoTexto').textContent = ghConfig.sha
-    ? `Vinculado a ${ghConfig.owner}/${ghConfig.repo} (${ghConfig.path})`
-    : 'Sin sincronizar aún.';
+    ? `Vinculado a ${ghConfig.owner}/${ghConfig.repo} (${ghConfig.path}) · ${modoTexto}`
+    : `Sin sincronizar aún · ${modoTexto}`;
+
+  actualizarEstadoModalGitHub();
   abrirModal('modalSyncGitHub');
 }
 
@@ -1056,6 +1129,18 @@ async function guardarYProbarGitHub() {
   ghConfig.token = document.getElementById('ghToken').value.trim();
   localStorage.setItem(GH_CONFIG_KEY, JSON.stringify(ghConfig));
   actualizarBadgeGitHub();
+  actualizarEstadoModalGitHub();
+
+  if (!tieneConfigLecturaGitHub()) {
+    alert('Completa usuario, repositorio y ruta del archivo.');
+    return;
+  }
+
+  if (!ghConfig.token) {
+    alert('ℹ️ Sin token se guardó en Modo Solo Lectura. Solo se descargarán datos desde GitHub.');
+    await descargarDesdeGitHub(true);
+    return;
+  }
 
   const remoto = await descargarDesdeGitHub(false);
   if (!remoto) {
@@ -1064,37 +1149,52 @@ async function guardarYProbarGitHub() {
 }
 
 async function descargarDesdeGitHub(mostrarAlerta = false) {
-  if (!ghConfig.owner || !ghConfig.repo || !ghConfig.path || !ghConfig.token) {
-    if (mostrarAlerta) alert('Completa primero los datos de GitHub.');
+  if (!tieneConfigLecturaGitHub()) {
+    if (mostrarAlerta) alert('Completa primero usuario, repositorio y ruta del archivo.');
     return false;
   }
+
   const url = `https://api.github.com/repos/${encodeURIComponent(ghConfig.owner)}/${encodeURIComponent(ghConfig.repo)}/contents/${encodeURIComponent(ghConfig.path)}`;
+  const headers = { Accept: 'application/vnd.github+json' };
+  if (ghConfig.token) {
+    headers.Authorization = `Bearer ${ghConfig.token}`;
+  }
+
   try {
-    const resp = await fetch(url, {
-      headers: {
-        Authorization: `Bearer ${ghConfig.token}`,
-        Accept: 'application/vnd.github+json'
-      }
-    });
+    const resp = await fetch(url, { headers });
     if (resp.status === 404) {
-      if (mostrarAlerta) alert('El archivo aún no existe en GitHub; se creará al guardar.');
+      if (mostrarAlerta) alert('El archivo aún no existe en GitHub.');
+      return false;
+    }
+    if (resp.status === 401 || resp.status === 403) {
+      if (mostrarAlerta) alert('🔒 Acceso denegado. Si el repositorio es privado, necesitas un token válido.');
       return false;
     }
     if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+
     const json = await resp.json();
     ghConfig.sha = json.sha;
     localStorage.setItem(GH_CONFIG_KEY, JSON.stringify(ghConfig));
 
     const decoded = decodeURIComponent(escape(atob(json.content.replace(/\n/g, ''))));
     const paquete = JSON.parse(decoded);
+
     if (paquete && paquete.data && Array.isArray(paquete.salas)) {
       listadoSalas = paquete.salas;
       data = migrarDatos(paquete.data, paquete.data._v || SCHEMA_VERSION);
       localStorage.setItem('guardiaSalas', JSON.stringify(listadoSalas));
       localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-      subirDatosAGitHub(false);
+
+      // Solo sube automáticamente si tiene token (modo edición)
+      if (tienePermisoEdicionGitHub()) {
+        await subirDatosAGitHub(false);
+      }
+
       renderizarTodo();
-      if (mostrarAlerta) alert('✅ Datos actualizados desde GitHub.');
+      if (mostrarAlerta) {
+        const modo = tienePermisoEdicionGitHub() ? 'Edición' : 'Solo lectura';
+        alert(`✅ Datos actualizados desde GitHub (${modo}).`);
+      }
       return true;
     }
     return false;
@@ -1106,7 +1206,14 @@ async function descargarDesdeGitHub(mostrarAlerta = false) {
 }
 
 async function subirDatosAGitHub(mostrarAlerta = false) {
-  if (!ghConfig.owner || !ghConfig.repo || !ghConfig.path || !ghConfig.token || ghSubiendo) return;
+  if (!tienePermisoEdicionGitHub()) {
+    if (mostrarAlerta) {
+      alert('🔒 Estás en Modo Solo Lectura: ingresa un Personal Access Token para subir cambios a GitHub.');
+    }
+    return;
+  }
+  if (ghSubiendo) return;
+
   ghSubiendo = true;
   actualizarBadgeGitHub();
 
@@ -1151,7 +1258,6 @@ async function subirDatosAGitHub(mostrarAlerta = false) {
     actualizarBadgeGitHub();
   }
 }
-
 /* ============================================================
    TIMELINE
 ============================================================ */
