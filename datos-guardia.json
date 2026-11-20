@@ -168,7 +168,7 @@
         "estado": "ingreso_anterior",
         "reporte": "grave",
         "tipo": "Urgencia",
-        "egresado": false,
+        "egresado": true,
         "operado": true,
         "fallecido": false,
         "pendienteOperar": false,
@@ -192,6 +192,13 @@
             "fecha": 1795032622934,
             "texto": "Movido de 1B a SOP",
             "autor": "Luis Damar Martínez Hevia"
+          },
+          {
+            "id": "be12342e-3e0f-47c7-93a6-e064860467f5",
+            "tipo": "cambio",
+            "fecha": 1795137678378,
+            "texto": "Paciente egresado",
+            "autor": "Luis Damar Martínez Hevia"
           }
         ],
         "checklists": {},
@@ -211,7 +218,7 @@
         "estado": "ingreso_anterior",
         "reporte": "grave",
         "tipo": "Urgencia",
-        "egresado": false,
+        "egresado": true,
         "operado": true,
         "fallecido": false,
         "pendienteOperar": false,
@@ -234,6 +241,13 @@
             "tipo": "cambio",
             "fecha": 1795032612566,
             "texto": "Movido de 1B a SOP",
+            "autor": "Luis Damar Martínez Hevia"
+          },
+          {
+            "id": "d3f81b49-500b-44b5-b1d4-f2a0cb7a75f5",
+            "tipo": "cambio",
+            "fecha": 1795137678962,
+            "texto": "Paciente egresado",
             "autor": "Luis Damar Martínez Hevia"
           }
         ],
@@ -794,7 +808,7 @@
         "estado": "observacion",
         "reporte": "de cuidado",
         "tipo": "Urgencia",
-        "egresado": false,
+        "egresado": true,
         "operado": false,
         "fallecido": false,
         "pendienteOperar": false,
@@ -804,7 +818,15 @@
         "tareas": [],
         "comentarios": [],
         "dosis": [],
-        "timeline": [],
+        "timeline": [
+          {
+            "id": "fac08f50-e1b6-472e-a17d-29b0b7a86909",
+            "tipo": "cambio",
+            "fecha": 1795137676911,
+            "texto": "Paciente egresado",
+            "autor": "Luis Damar Martínez Hevia"
+          }
+        ],
         "checklists": {
           "preop": {}
         },
@@ -877,7 +899,7 @@
         "estado": "ingresado",
         "reporte": "grave",
         "tipo": "Urgencia",
-        "egresado": false,
+        "egresado": true,
         "operado": true,
         "fallecido": false,
         "pendienteOperar": false,
@@ -900,6 +922,13 @@
             "tipo": "cambio",
             "fecha": 1795075325054,
             "texto": "📸 Foto añadida: Rx tórax ",
+            "autor": "Luis Damar Martínez Hevia"
+          },
+          {
+            "id": "a359c8d1-0854-4f69-8724-db9e703257d6",
+            "tipo": "cambio",
+            "fecha": 1795137679975,
+            "texto": "Paciente egresado",
             "autor": "Luis Damar Martínez Hevia"
           }
         ],
@@ -944,28 +973,6 @@
       }
     ],
     "pendientes": [
-      {
-        "id": "a93fd22f-7741-475c-ac3f-fdb656712c33",
-        "texto": "Anónimo - 1B (Cama 9): OIM x Bridas",
-        "sala": "1B",
-        "cama": "9",
-        "completado": true,
-        "pacienteId": "a86b463c-fecf-42f7-a616-046cb118c872",
-        "cirugiaRealizada": "Lisis de bridas + lavado",
-        "diagnosticoOperatorio": "OIM x Bridas + peritonitis localizada",
-        "comentariosOperatorio": null
-      },
-      {
-        "id": "c8c75e1e-a4e0-42e0-b4ea-4b9107c949d9",
-        "texto": "Anónimo - 1B (Cama 18): Peritonitis Fecaloidea por dehiscencia de sutura ",
-        "sala": "1B",
-        "cama": "18",
-        "completado": true,
-        "pacienteId": "29637723-1005-4ca6-83d4-314924b9ddac",
-        "cirugiaRealizada": "Sutura Primaria + lavado + drenaje",
-        "diagnosticoOperatorio": "Peritonitis fecaloidea por dehiscencia de sutura",
-        "comentariosOperatorio": null
-      },
       {
         "id": "ba83222f-931e-44e3-ac6f-131af9d320c8",
         "texto": "Anónimo - 1B (Cama 18): Apendicitis Aguda ",
@@ -1039,17 +1046,6 @@
         "cama": "7",
         "completado": false,
         "pacienteId": "5723f889-5c85-4746-a31c-23d1beed2233"
-      },
-      {
-        "id": "cb10c024-3992-479f-893c-df3d4ab59fe8",
-        "texto": "Jose - SOP (Sin cama): Úlcera gastroduodenal perforada ",
-        "sala": "SOP",
-        "cama": null,
-        "completado": true,
-        "pacienteId": "1795074930461",
-        "cirugiaRealizada": "Proceder de Graham + lavado + drenaje",
-        "diagnosticoOperatorio": "Peritonitis Fibrinopurulenta difusa por úlcera prepilorica perforada",
-        "comentariosOperatorio": null
       }
     ],
     "recados": [
@@ -1068,5 +1064,5 @@
     ],
     "guardiaInicio": 1795007950258
   },
-  "actualizadoEn": 1795137673901
+  "actualizadoEn": 1795137684150
 }
