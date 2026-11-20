@@ -279,6 +279,28 @@ textarea{resize:vertical;min-height:50px;font-family:inherit}
     <p>Cirugía General · <span id="ultimaActualizacion">Actualizado</span></p>
   </div>
   <div class="header-actions">
+      <!-- Botón dentro de <div class="header-actions"> -->
+<button class="btn-icon outline" id="btnSyncGitHub" onclick="abrirModalSyncGitHub()">☁️ GitHub</button>
+
+<!-- Modal de Sincronización GitHub -->
+<div class="modal-overlay" id="modalSyncGitHub" onclick="cerrarModalAfuera(event,'modalSyncGitHub')">
+  <div class="modal-content">
+    <span class="modal-close" onclick="cerrarModal('modalSyncGitHub')">&times;</span>
+    <h2>☁️ Sincronización GitHub</h2>
+    <p style="font-size:12px;color:var(--text-light);margin-bottom:10px;">
+      Guarda y descarga automáticamente los datos de la guardia en un archivo JSON dentro de tu repositorio.
+    </p>
+    <input type="text" id="ghOwner" placeholder="Usuario u organización de GitHub">
+    <input type="text" id="ghRepo" placeholder="Nombre del repositorio (ej: guardia-cirugia)">
+    <input type="text" id="ghPath" placeholder="Ruta del archivo (ej: datos-guardia.json)">
+    <input type="password" id="ghToken" placeholder="Personal Access Token (permiso repo)">
+    <div class="form-row">
+      <button type="button" class="btn-main btn-success" onclick="guardarYProbarGitHub()">💾 Guardar y Sincronizar</button>
+      <button type="button" class="btn-main" onclick="descargarDesdeGitHub(true)">🔄 Refrescar</button>
+    </div>
+    <p id="ghEstadoTexto" style="font-size:11px;color:var(--text-light);margin-top:10px;"></p>
+  </div>
+</div>
     <div class="perfil-badge" onclick="abrirModalPerfilPrellenado()" id="perfilBadge">
       <div class="avatar" id="perfilAvatar">?</div>
       <span id="perfilNombre">Perfil</span>
@@ -996,6 +1018,139 @@ function toggleCampoCama(){
   else{wr.classList.remove('oculto');lbl.textContent='💡 Opcional';}
 }
 
+const GH_CONFIG_KEY = 'guardiaGitHubSyncConfig';
+let ghConfig = { owner: '', repo: '', path: 'datos-guardia.json', token: '', sha: null };
+let ghSubiendo = false;
+
+function cargarConfigGitHub() {
+  try {
+    const raw = localStorage.getItem(GH_CONFIG_KEY);
+    if (raw) ghConfig = { ...ghConfig, ...JSON.parse(raw) };
+  } catch (e) { console.error(e); }
+  actualizarBadgeGitHub();
+}
+
+function actualizarBadgeGitHub() {
+  const btn = document.getElementById('btnSyncGitHub');
+  if (!btn) return;
+  const conectado = Boolean(ghConfig.owner && ghConfig.repo && ghConfig.path && ghConfig.token);
+  btn.textContent = ghSubiendo ? '⏳ Sync...' : (conectado ? '☁️ Sync OK' : '☁️ GitHub');
+}
+
+function abrirModalSyncGitHub() {
+  document.getElementById('ghOwner').value = ghConfig.owner || '';
+  document.getElementById('ghRepo').value = ghConfig.repo || '';
+  document.getElementById('ghPath').value = ghConfig.path || 'datos-guardia.json';
+  document.getElementById('ghToken').value = ghConfig.token || '';
+  document.getElementById('ghEstadoTexto').textContent = ghConfig.sha
+    ? `Vinculado a ${ghConfig.owner}/${ghConfig.repo} (${ghConfig.path})`
+    : 'Sin sincronizar aún.';
+  abrirModal('modalSyncGitHub');
+}
+
+async function guardarYProbarGitHub() {
+  ghConfig.owner = document.getElementById('ghOwner').value.trim();
+  ghConfig.repo = document.getElementById('ghRepo').value.trim();
+  ghConfig.path = (document.getElementById('ghPath').value.trim() || 'datos-guardia.json').replace(/^\/+/, '');
+  ghConfig.token = document.getElementById('ghToken').value.trim();
+  localStorage.setItem(GH_CONFIG_KEY, JSON.stringify(ghConfig));
+  actualizarBadgeGitHub();
+
+  const remoto = await descargarDesdeGitHub(false);
+  if (!remoto) {
+    await subirDatosAGitHub(true);
+  }
+}
+
+async function descargarDesdeGitHub(mostrarAlerta = false) {
+  if (!ghConfig.owner || !ghConfig.repo || !ghConfig.path || !ghConfig.token) {
+    if (mostrarAlerta) alert('Completa primero los datos de GitHub.');
+    return false;
+  }
+  const url = `https://api.github.com/repos/${encodeURIComponent(ghConfig.owner)}/${encodeURIComponent(ghConfig.repo)}/contents/${encodeURIComponent(ghConfig.path)}`;
+  try {
+    const resp = await fetch(url, {
+      headers: {
+        Authorization: `Bearer ${ghConfig.token}`,
+        Accept: 'application/vnd.github+json'
+      }
+    });
+    if (resp.status === 404) {
+      if (mostrarAlerta) alert('El archivo aún no existe en GitHub; se creará al guardar.');
+      return false;
+    }
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+    const json = await resp.json();
+    ghConfig.sha = json.sha;
+    localStorage.setItem(GH_CONFIG_KEY, JSON.stringify(ghConfig));
+
+    const decoded = decodeURIComponent(escape(atob(json.content.replace(/\n/g, ''))));
+    const paquete = JSON.parse(decoded);
+    if (paquete && paquete.data && Array.isArray(paquete.salas)) {
+      listadoSalas = paquete.salas;
+      data = migrarDatos(paquete.data, paquete.data._v || SCHEMA_VERSION);
+      localStorage.setItem('guardiaSalas', JSON.stringify(listadoSalas));
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+      subirDatosAGitHub(false);
+      renderizarTodo();
+      if (mostrarAlerta) alert('✅ Datos actualizados desde GitHub.');
+      return true;
+    }
+    return false;
+  } catch (err) {
+    console.error(err);
+    if (mostrarAlerta) alert('❌ Error al descargar desde GitHub: ' + err.message);
+    return false;
+  }
+}
+
+async function subirDatosAGitHub(mostrarAlerta = false) {
+  if (!ghConfig.owner || !ghConfig.repo || !ghConfig.path || !ghConfig.token || ghSubiendo) return;
+  ghSubiendo = true;
+  actualizarBadgeGitHub();
+
+  const url = `https://api.github.com/repos/${encodeURIComponent(ghConfig.owner)}/${encodeURIComponent(ghConfig.repo)}/contents/${encodeURIComponent(ghConfig.path)}`;
+  const payloadObj = { _v: SCHEMA_VERSION, salas: listadoSalas, data: data, actualizadoEn: Date.now() };
+  const contentBase64 = btoa(unescape(encodeURIComponent(JSON.stringify(payloadObj, null, 2))));
+
+  try {
+    if (!ghConfig.sha) {
+      const check = await fetch(url, {
+        headers: { Authorization: `Bearer ${ghConfig.token}`, Accept: 'application/vnd.github+json' }
+      });
+      if (check.ok) {
+        const info = await check.json();
+        ghConfig.sha = info.sha;
+      }
+    }
+    const body = {
+      message: `Sync guardia ${new Date().toISOString()}`,
+      content: contentBase64,
+      ...(ghConfig.sha ? { sha: ghConfig.sha } : {})
+    };
+    const resp = await fetch(url, {
+      method: 'PUT',
+      headers: {
+        Authorization: `Bearer ${ghConfig.token}`,
+        Accept: 'application/vnd.github+json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(body)
+    });
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+    const resJson = await resp.json();
+    ghConfig.sha = resJson.content?.sha || ghConfig.sha;
+    localStorage.setItem(GH_CONFIG_KEY, JSON.stringify(ghConfig));
+    if (mostrarAlerta) alert('✅ Sincronizado con GitHub.');
+  } catch (err) {
+    console.error(err);
+    if (mostrarAlerta) alert('❌ Error al subir a GitHub: ' + err.message);
+  } finally {
+    ghSubiendo = false;
+    actualizarBadgeGitHub();
+  }
+}
+
 /* ============================================================
    TIMELINE
 ============================================================ */
@@ -1496,6 +1651,8 @@ window.addEventListener('DOMContentLoaded', async () => {
   const huboSincronizacion = comprobarSincronizacionURL();
   if (!huboSincronizacion) {
     cargarDatos();
+    cargarConfigGitHub();
+descargarDesdeGitHub(false);
   }
 
   try { await cargarFotosCache(); } catch(e) { console.error('IndexedDB error:',e); }
