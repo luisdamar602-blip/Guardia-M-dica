@@ -196,6 +196,39 @@
         "timeline": [],
         "checklists": {},
         "fotosCount": 0
+      },
+      {
+        "id": "1795355061739",
+        "nombre": "Anónimo",
+        "historiaClinica": null,
+        "edad": null,
+        "sexo": null,
+        "cama": null,
+        "diagnostico": "Peritonitis Fecaloidea por dehiscencia de sutura ",
+        "sala": "SOP",
+        "estado": "ingreso_anterior",
+        "reporte": "grave",
+        "tipo": "Urgencia",
+        "egresado": false,
+        "operado": false,
+        "fallecido": false,
+        "pendienteOperar": false,
+        "cirugiaRealizada": null,
+        "diagnosticoOperatorio": null,
+        "comentariosOperacion": null,
+        "tareas": [
+          {
+            "id": "8fbd770d-21f4-4ddd-b930-229a80cfac63",
+            "texto": "Pendiente a UCI-A",
+            "completado": false,
+            "autor": "Luis Damar Martínez Hevia"
+          }
+        ],
+        "comentarios": [],
+        "dosis": [],
+        "timeline": [],
+        "checklists": {},
+        "fotosCount": 0
       }
     ],
     "pendientes": [
@@ -256,5 +289,5 @@
     ],
     "guardiaInicio": 1795182983540
   },
-  "actualizadoEn": 1795355002612
+  "actualizadoEn": 1795355062441
 }
