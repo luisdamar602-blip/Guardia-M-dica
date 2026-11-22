@@ -437,7 +437,7 @@
         "estado": "observacion",
         "reporte": "de cuidado",
         "tipo": "Urgencia",
-        "egresado": false,
+        "egresado": true,
         "operado": false,
         "fallecido": false,
         "pendienteOperar": false,
@@ -447,7 +447,15 @@
         "tareas": [],
         "comentarios": [],
         "dosis": [],
-        "timeline": [],
+        "timeline": [
+          {
+            "id": "58ff8de5-d522-4bc2-8ac8-0524adf1b341",
+            "tipo": "cambio",
+            "fecha": 1795392888052,
+            "texto": "Paciente egresado",
+            "autor": "LuisDamar Martínez Hevia"
+          }
+        ],
         "checklists": {},
         "fotosCount": 0
       }
@@ -535,5 +543,5 @@
     ],
     "guardiaInicio": 1795182983540
   },
-  "actualizadoEn": 1795389862876
+  "actualizadoEn": 1795392888760
 }
