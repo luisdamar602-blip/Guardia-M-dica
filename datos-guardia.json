@@ -246,9 +246,15 @@
         "texto": "Escara Sacra UCI-B cama 7",
         "sala": null,
         "completado": false
+      },
+      {
+        "id": "35aad8e2-31c9-4c00-aa84-5a417f889684",
+        "texto": "Transfusion de UCIE cama 2",
+        "sala": null,
+        "completado": false
       }
     ],
     "guardiaInicio": 1795182983540
   },
-  "actualizadoEn": 1795354966433
+  "actualizadoEn": 1795355002612
 }
