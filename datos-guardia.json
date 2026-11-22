@@ -353,7 +353,7 @@
         "historiaClinica": null,
         "edad": null,
         "sexo": null,
-        "cama": "16",
+        "cama": "6",
         "diagnostico": "Hernia Inguinoescrotal derecha Atascada ",
         "sala": "Polivalente",
         "estado": "ingresado",
@@ -512,9 +512,9 @@
       },
       {
         "id": "c8570a6f-e836-406a-90eb-fc088204e1cc",
-        "texto": "Benedicto - Polivalente (Cama 16): Hernia Inguinoescrotal derecha Atascada ",
+        "texto": "Benedicto - Polivalente (Cama 6): Hernia Inguinoescrotal derecha Atascada ",
         "sala": "Polivalente",
-        "cama": "16",
+        "cama": "6",
         "completado": false,
         "pacienteId": "1795381223545"
       },
@@ -543,5 +543,5 @@
     ],
     "guardiaInicio": 1795182983540
   },
-  "actualizadoEn": 1795392888760
+  "actualizadoEn": 1795392893467
 }
