@@ -366,6 +366,32 @@
         "timeline": [],
         "checklists": {},
         "fotosCount": 0
+      },
+      {
+        "id": "1795381276523",
+        "nombre": "Yosbanis",
+        "historiaClinica": null,
+        "edad": null,
+        "sexo": null,
+        "cama": "1",
+        "diagnostico": "Hernia Inguinoescrotal derecha Atascada ",
+        "sala": "1A",
+        "estado": "ingresado",
+        "reporte": "de cuidado",
+        "tipo": "Urgencia",
+        "egresado": false,
+        "operado": false,
+        "fallecido": false,
+        "pendienteOperar": true,
+        "cirugiaRealizada": null,
+        "diagnosticoOperatorio": null,
+        "comentariosOperacion": null,
+        "tareas": [],
+        "comentarios": [],
+        "dosis": [],
+        "timeline": [],
+        "checklists": {},
+        "fotosCount": 0
       }
     ],
     "pendientes": [
@@ -430,6 +456,14 @@
         "cama": "16",
         "completado": false,
         "pacienteId": "1795381223545"
+      },
+      {
+        "id": "01010aa9-a830-4f9d-9d5c-f01de5141178",
+        "texto": "Yosbanis - 1A (Cama 1): Hernia Inguinoescrotal derecha Atascada ",
+        "sala": "1A",
+        "cama": "1",
+        "completado": false,
+        "pacienteId": "1795381276523"
       }
     ],
     "recados": [
@@ -448,5 +482,5 @@
     ],
     "guardiaInicio": 1795182983540
   },
-  "actualizadoEn": 1795381260745
+  "actualizadoEn": 1795381277226
 }
