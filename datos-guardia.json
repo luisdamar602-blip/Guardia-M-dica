@@ -68,7 +68,7 @@
         "diagnostico": "HDA",
         "sala": "1A",
         "estado": "ingreso_anterior",
-        "reporte": "grave",
+        "reporte": "grave estable",
         "tipo": "Urgencia",
         "egresado": false,
         "operado": false,
@@ -524,5 +524,5 @@
     ],
     "guardiaInicio": 1795182983540
   },
-  "actualizadoEn": 1795381356813
+  "actualizadoEn": 1795381365483
 }
