@@ -383,10 +383,10 @@
         "id": "35aad8e2-31c9-4c00-aa84-5a417f889684",
         "texto": "Transfusion de UCIE cama 2",
         "sala": null,
-        "completado": false
+        "completado": true
       }
     ],
     "guardiaInicio": 1795182983540
   },
-  "actualizadoEn": 1795381125479
+  "actualizadoEn": 1795381141027
 }
