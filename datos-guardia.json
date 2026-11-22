@@ -113,7 +113,14 @@
         "diagnosticoOperatorio": null,
         "comentariosOperacion": null,
         "tareas": [],
-        "comentarios": [],
+        "comentarios": [
+          {
+            "id": "678a5c0e-1211-4dca-ba86-23217314138e",
+            "texto": "Yacel",
+            "fecha": 1795354871915,
+            "autor": "Luis Damar Martínez Hevia"
+          }
+        ],
         "dosis": [],
         "timeline": [],
         "checklists": {},
@@ -250,5 +257,5 @@
     ],
     "guardiaInicio": 1795182983540
   },
-  "actualizadoEn": 1795353848774
+  "actualizadoEn": 1795354872620
 }
