@@ -17,10 +17,10 @@
     "pacientes": [
       {
         "id": "1795353713206",
-        "nombre": "Anónimo",
+        "nombre": "Roberto Ramirez Perez",
         "historiaClinica": null,
-        "edad": null,
-        "sexo": null,
+        "edad": 76,
+        "sexo": "M",
         "cama": "24",
         "diagnostico": "Colecistitis Aguda ",
         "sala": "1A",
@@ -375,5 +375,5 @@
     ],
     "guardiaInicio": 1795182983540
   },
-  "actualizadoEn": 1795370394394
+  "actualizadoEn": 1795370541108
 }
