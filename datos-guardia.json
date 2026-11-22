@@ -214,10 +214,10 @@
       },
       {
         "id": "1795353817881",
-        "nombre": "Anónimo",
+        "nombre": "Maria Estela Cedeño Mendoza",
         "historiaClinica": null,
-        "edad": null,
-        "sexo": null,
+        "edad": 70,
+        "sexo": "F",
         "cama": "1",
         "diagnostico": "Fístula rectovaginal ",
         "sala": "1B",
@@ -344,7 +344,7 @@
       },
       {
         "id": "9385f53b-f266-49fc-967b-7ad0e253c904",
-        "texto": "Anónimo - 1B (Cama 1): Fístula rectovaginal ",
+        "texto": "Maria Estela Cedeño Mendoza - 1B (Cama 1): Fístula rectovaginal ",
         "sala": "1B",
         "cama": "1",
         "completado": false,
@@ -375,5 +375,5 @@
     ],
     "guardiaInicio": 1795182983540
   },
-  "actualizadoEn": 1795370541108
+  "actualizadoEn": 1795370594878
 }
