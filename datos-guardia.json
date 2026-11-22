@@ -392,6 +392,32 @@
         "timeline": [],
         "checklists": {},
         "fotosCount": 0
+      },
+      {
+        "id": "1795381305176",
+        "nombre": "Anónimo",
+        "historiaClinica": null,
+        "edad": null,
+        "sexo": null,
+        "cama": "19",
+        "diagnostico": "Policontuso ",
+        "sala": "Polivalente",
+        "estado": "observacion",
+        "reporte": "de cuidado",
+        "tipo": "Urgencia",
+        "egresado": false,
+        "operado": false,
+        "fallecido": false,
+        "pendienteOperar": false,
+        "cirugiaRealizada": null,
+        "diagnosticoOperatorio": null,
+        "comentariosOperacion": null,
+        "tareas": [],
+        "comentarios": [],
+        "dosis": [],
+        "timeline": [],
+        "checklists": {},
+        "fotosCount": 0
       }
     ],
     "pendientes": [
@@ -482,5 +508,5 @@
     ],
     "guardiaInicio": 1795182983540
   },
-  "actualizadoEn": 1795381277226
+  "actualizadoEn": 1795381305878
 }
