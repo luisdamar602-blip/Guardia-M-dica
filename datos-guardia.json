@@ -246,7 +246,7 @@
         "sexo": null,
         "cama": null,
         "diagnostico": "Peritonitis Fecaloidea por dehiscencia de sutura ",
-        "sala": "SOP",
+        "sala": "UCI-B",
         "estado": "ingreso_anterior",
         "reporte": "grave",
         "tipo": "Urgencia",
@@ -267,7 +267,15 @@
         ],
         "comentarios": [],
         "dosis": [],
-        "timeline": [],
+        "timeline": [
+          {
+            "id": "0f7c4f7b-8b63-4120-86d3-6933f3cca110",
+            "tipo": "cambio",
+            "fecha": 1795370393691,
+            "texto": "Movido de SOP a UCI-B",
+            "autor": "LuisDamar Martínez Hevia"
+          }
+        ],
         "checklists": {},
         "fotosCount": 0
       },
@@ -367,5 +375,5 @@
     ],
     "guardiaInicio": 1795182983540
   },
-  "actualizadoEn": 1795370375976
+  "actualizadoEn": 1795370394394
 }
