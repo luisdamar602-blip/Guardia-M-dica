@@ -301,6 +301,22 @@ textarea{resize:vertical;min-height:50px;font-family:inherit}
       <button type="button" id="btnGhRefrescar" class="btn-main" onclick="descargarDesdeGitHub(true)">🔄 Refrescar</button>
     </div>
     <p id="ghEstadoTexto" style="font-size:11px;color:var(--text-light);margin-top:10px;"></p>
+    <div style="margin-top:14px;padding-top:12px;border-top:1px dashed var(--border);">
+      <p style="font-size:12px;font-weight:600;color:var(--text);margin-bottom:6px;">
+        🔗 Vincular otro dispositivo con enlace
+      </p>
+      <p style="font-size:11px;color:var(--text-light);margin-bottom:8px;">
+        El enlace de <strong>Solo lectura</strong> no incluye tu token y abre la guardia en modo consulta.
+      </p>
+      <div class="form-row">
+        <button type="button" class="btn-main" style="background:var(--info);" onclick="copiarEnlaceGitHub(false)">
+          👁️ Link Solo Lectura
+        </button>
+        <button type="button" class="btn-main btn-warning" onclick="copiarEnlaceGitHub(true)">
+          ✏️ Link Edición
+        </button>
+      </div>
+    </div>
   </div>
 </div>
     <div class="perfil-badge" onclick="abrirModalPerfilPrellenado()" id="perfilBadge">
@@ -315,6 +331,10 @@ textarea{resize:vertical;min-height:50px;font-family:inherit}
     <button class="btn-icon" onclick="abrirModal('modalGestionSalas')">⚙️</button>
   </div>
 </header>
+<div id="bannerSoloLectura" style="display:none;background:#0c4a6e;color:#fff;padding:8px 12px;border-radius:8px;margin-bottom:12px;font-size:12px;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;">
+  <span>👁️ <strong>Modo Solo Lectura:</strong> Estás viendo los datos sincronizados. Para editar, añade un Token en ☁️ GitHub.</span>
+  <button type="button" class="btn-icon" style="background:#0284c7;" onclick="descargarDesdeGitHub(true)">🔄 Actualizar</button>
+</div>
 
 <div class="dashboard-grid" id="dashboardGrid">
   <div class="dash-card"><div class="number" id="totalIngresos">0</div><div class="label">📥 Ingresos</div></div>
@@ -950,7 +970,7 @@ function cargarSalas(){
   if(s){try{listadoSalas=JSON.parse(s);if(!Array.isArray(listadoSalas))throw 0;}catch(e){listadoSalas=["1A","1B","UCI-E","SOP","UCI-A","UCI-B","Polivalente","Cuerpo de Guardia"];guardarSalas();}}
   else{listadoSalas=["1A","1B","UCI-E","SOP","UCI-A","UCI-B","Polivalente","Cuerpo de Guardia"];guardarSalas();}
 }
-function guardarSalas(){try{localStorage.setItem('guardiaSalas',JSON.stringify(listadoSalas));}catch(e){}}
+function guardarSalas(sincronizar = true){try{localStorage.setItem('guardiaSalas',JSON.stringify(listadoSalas));if(sincronizar)programarSubidaGitHub();}catch(e){}}
 
 function cargarPerfil(){
   const p = localStorage.getItem(PERFIL_KEY);
@@ -1000,9 +1020,13 @@ function cargarDatos(){
     else data=parsed;
   }catch(e){console.error('Error cargando:',e);}
 }
-function guardarEnLocalStorage(){
+function guardarEnLocalStorage(sincronizar = true){
   data._v=SCHEMA_VERSION;
-  try{localStorage.setItem(STORAGE_KEY,JSON.stringify(data));actualizarTimestampUI();}
+  try{
+    localStorage.setItem(STORAGE_KEY,JSON.stringify(data));
+    actualizarTimestampUI();
+    if(sincronizar)programarSubidaGitHub();
+  }
   catch(e){
     if(e.name==='QuotaExceededError')alert('⚠️ Almacenamiento lleno. Exporta y reinicia.');
     else console.error(e);
@@ -1023,6 +1047,102 @@ function toggleCampoCama(){
 const GH_CONFIG_KEY = 'guardiaGitHubSyncConfig';
 let ghConfig = { owner: '', repo: '', path: 'datos-guardia.json', token: '', sha: null };
 let ghSubiendo = false;
+let ghSyncTimer = null;
+
+function esModoSoloLecturaGitHub() {
+  return Boolean(ghConfig.owner && ghConfig.repo && ghConfig.path && !ghConfig.token);
+}
+
+function comprobarConfigHashGitHub() {
+  const hash = window.location.hash || '';
+  if (!hash.startsWith('#config=')) return false;
+  try {
+    const encoded = hash.slice('#config='.length);
+    const jsonStr = decodeURIComponent(escape(atob(encoded)));
+    const parsed = JSON.parse(jsonStr);
+    if (parsed && parsed.owner && parsed.repo) {
+      ghConfig = {
+        ...ghConfig,
+        owner: String(parsed.owner).trim(),
+        repo: String(parsed.repo).trim(),
+        path: String(parsed.path || 'datos-guardia.json').replace(/^\/+/, '').trim(),
+        token: parsed.token ? String(parsed.token).trim() : '',
+        sha: null
+      };
+      localStorage.setItem(GH_CONFIG_KEY, JSON.stringify(ghConfig));
+      history.replaceState(null, document.title, window.location.pathname + window.location.search);
+      actualizarBadgeGitHub();
+      return true;
+    }
+  } catch (err) {
+    console.error('Enlace #config inválido:', err);
+  }
+  return false;
+}
+
+function copiarEnlaceGitHub(incluirToken = false) {
+  const owner = (document.getElementById('ghOwner')?.value || ghConfig.owner || '').trim();
+  const repo = (document.getElementById('ghRepo')?.value || ghConfig.repo || '').trim();
+  const path = ((document.getElementById('ghPath')?.value || ghConfig.path || 'datos-guardia.json').trim() || 'datos-guardia.json').replace(/^\/+/, '');
+  const token = (document.getElementById('ghToken')?.value || ghConfig.token || '').trim();
+
+  if (!owner || !repo) {
+    alert('Completa primero el Usuario/Organización y el Repositorio de GitHub.');
+    return;
+  }
+  if (incluirToken && !token) {
+    alert('Ingresa un Personal Access Token para generar un enlace de edición.');
+    return;
+  }
+
+  const payload = { owner, repo, path };
+  if (incluirToken) payload.token = token;
+
+  const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(payload))));
+  const baseUrl = `${window.location.origin}${window.location.pathname}`;
+  const shareUrl = `${baseUrl}#config=${encoded}`;
+
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(shareUrl)
+      .then(() => alert(incluirToken ? '✅ Enlace de EDICIÓN copiado al portapapeles.' : '✅ Enlace de SOLO LECTURA copiado al portapapeles.'))
+      .catch(() => prompt('Copia este enlace:', shareUrl));
+  } else {
+    prompt('Copia este enlace:', shareUrl);
+  }
+}
+
+function programarSubidaGitHub(delayMs = 700) {
+  if (!tienePermisoEdicionGitHub()) return;
+  clearTimeout(ghSyncTimer);
+  ghSyncTimer = setTimeout(() => {
+    subirDatosAGitHub(false);
+  }, delayMs);
+}
+
+function aplicarModoSoloLecturaUI() {
+  const soloLectura = esModoSoloLecturaGitHub();
+  const banner = document.getElementById('bannerSoloLectura');
+  if (banner) banner.style.display = soloLectura ? 'flex' : 'none';
+
+  const fab = document.querySelector('.floating-container');
+  if (fab) fab.style.display = soloLectura ? 'none' : '';
+
+  const btnReiniciar = document.querySelector('header .btn-icon.danger');
+  if (btnReiniciar) btnReiniciar.style.display = soloLectura ? 'none' : '';
+
+  const btnSalas = document.querySelector('header button[onclick*="modalGestionSalas"]');
+  if (btnSalas) btnSalas.style.display = soloLectura ? 'none' : '';
+
+  document.querySelectorAll('.btn-action').forEach(btn => {
+    const title = (btn.getAttribute('title') || '').toLowerCase();
+    const esEdicion = title.includes('editar') || title.includes('marcar') || title.includes('egresar') || title.includes('borrar');
+    if (esEdicion) btn.style.display = soloLectura ? 'none' : '';
+  });
+
+  document.querySelectorAll('.select-transfer-rapido').forEach(sel => {
+    sel.style.display = soloLectura ? 'none' : '';
+  });
+}
 
 function cargarConfigGitHub() {
   try {
@@ -1184,11 +1304,6 @@ async function descargarDesdeGitHub(mostrarAlerta = false) {
       data = migrarDatos(paquete.data, paquete.data._v || SCHEMA_VERSION);
       localStorage.setItem('guardiaSalas', JSON.stringify(listadoSalas));
       localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-
-      // Solo sube automáticamente si tiene token (modo edición)
-      if (tienePermisoEdicionGitHub()) {
-        await subirDatosAGitHub(false);
-      }
 
       renderizarTodo();
       if (mostrarAlerta) {
@@ -1754,18 +1869,30 @@ function renderizarStats(){
 window.addEventListener('DOMContentLoaded', async () => {
   cargarSalas();
   cargarPerfil();
-  
+  cargarConfigGitHub();
+
+  const vinoConConfig = comprobarConfigHashGitHub();
   const huboSincronizacion = comprobarSincronizacionURL();
+
   if (!huboSincronizacion) {
     cargarDatos();
-    cargarConfigGitHub();
-descargarDesdeGitHub(false);
+  }
+
+  if (tieneConfigLecturaGitHub() && (vinoConConfig || !huboSincronizacion)) {
+    await descargarDesdeGitHub(false);
   }
 
   try { await cargarFotosCache(); } catch(e) { console.error('IndexedDB error:',e); }
   renderizarTodo();
   mostrarGestionSalas();
   toggleCampoCama();
+  aplicarModoSoloLecturaUI();
+});
+
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible' && tieneConfigLecturaGitHub() && !ghSubiendo) {
+    descargarDesdeGitHub(false);
+  }
 });
 
 
@@ -1783,6 +1910,7 @@ function renderizarTodo(){
   renderizarListaGeneral();
   if(document.getElementById('tab-estadisticas') && document.getElementById('tab-estadisticas').classList.contains('active'))renderizarStats();
   actualizarTimestampUI();
+  aplicarModoSoloLecturaUI();
 }
 
 function actualizarContadores(){
