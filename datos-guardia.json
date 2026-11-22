@@ -146,13 +146,13 @@
       },
       {
         "id": "1795353791020",
-        "nombre": "Anónimo",
+        "nombre": "Leonardo Céspedes Castro",
         "historiaClinica": null,
-        "edad": null,
-        "sexo": null,
-        "cama": null,
+        "edad": 82,
+        "sexo": "M",
+        "cama": "2",
         "diagnostico": "Hernia Inguinoescrotal derecha Atascada ",
-        "sala": "Cuerpo de Guardia",
+        "sala": "Polivalente",
         "estado": "ingresado",
         "reporte": "de cuidado",
         "tipo": "Urgencia",
@@ -166,7 +166,15 @@
         "tareas": [],
         "comentarios": [],
         "dosis": [],
-        "timeline": [],
+        "timeline": [
+          {
+            "id": "d030fd8c-27db-4a25-aec8-dd846f35a788",
+            "tipo": "cambio",
+            "fecha": 1795370346965,
+            "texto": "Movido de Cuerpo de Guardia a Polivalente",
+            "autor": "LuisDamar Martínez Hevia"
+          }
+        ],
         "checklists": {},
         "fotosCount": 0
       },
@@ -304,9 +312,9 @@
       },
       {
         "id": "6cd74066-eb91-4d6f-8401-c2843b699756",
-        "texto": "Anónimo - Cuerpo de Guardia (Sin cama): Hernia Inguinoescrotal derecha Atascada ",
-        "sala": "Cuerpo de Guardia",
-        "cama": null,
+        "texto": "Leonardo Céspedes Castro - Polivalente (Cama 2): Hernia Inguinoescrotal derecha Atascada ",
+        "sala": "Polivalente",
+        "cama": "2",
         "completado": false,
         "pacienteId": "1795353791020"
       },
@@ -351,5 +359,5 @@
     ],
     "guardiaInicio": 1795182983540
   },
-  "actualizadoEn": 1795370309660
+  "actualizadoEn": 1795370347668
 }
