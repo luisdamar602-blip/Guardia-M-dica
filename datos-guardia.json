@@ -150,9 +150,9 @@
         "historiaClinica": null,
         "edad": 82,
         "sexo": "M",
-        "cama": "2",
+        "cama": null,
         "diagnostico": "Hernia Inguinoescrotal derecha Atascada ",
-        "sala": "Polivalente",
+        "sala": "SOP",
         "estado": "ingresado",
         "reporte": "de cuidado",
         "tipo": "Urgencia",
@@ -172,6 +172,13 @@
             "tipo": "cambio",
             "fecha": 1795370346965,
             "texto": "Movido de Cuerpo de Guardia a Polivalente",
+            "autor": "LuisDamar Martínez Hevia"
+          },
+          {
+            "id": "eba5ae26-0757-4eb8-9864-b5abd9cc8313",
+            "tipo": "cambio",
+            "fecha": 1795381106991,
+            "texto": "Movido de Polivalente a SOP",
             "autor": "LuisDamar Martínez Hevia"
           }
         ],
@@ -338,9 +345,9 @@
       },
       {
         "id": "6cd74066-eb91-4d6f-8401-c2843b699756",
-        "texto": "Leonardo Céspedes Castro - Polivalente (Cama 2): Hernia Inguinoescrotal derecha Atascada ",
-        "sala": "Polivalente",
-        "cama": "2",
+        "texto": "Leonardo Céspedes Castro - SOP (Sin cama): Hernia Inguinoescrotal derecha Atascada ",
+        "sala": "SOP",
+        "cama": null,
         "completado": false,
         "pacienteId": "1795353791020"
       },
@@ -388,5 +395,5 @@
     ],
     "guardiaInicio": 1795182983540
   },
-  "actualizadoEn": 1795381091284
+  "actualizadoEn": 1795381107693
 }
