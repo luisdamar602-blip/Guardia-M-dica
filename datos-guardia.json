@@ -180,13 +180,13 @@
       },
       {
         "id": "1795353801298",
-        "nombre": "Anónimo",
+        "nombre": "Emma Aviles Tamayo",
         "historiaClinica": null,
-        "edad": null,
-        "sexo": null,
-        "cama": null,
+        "edad": 86,
+        "sexo": "F",
+        "cama": "14",
         "diagnostico": "Ántrax Dorsal ",
-        "sala": "Cuerpo de Guardia",
+        "sala": "1B",
         "estado": "ingresado",
         "reporte": "de cuidado",
         "tipo": "Urgencia",
@@ -200,7 +200,15 @@
         "tareas": [],
         "comentarios": [],
         "dosis": [],
-        "timeline": [],
+        "timeline": [
+          {
+            "id": "41613567-0962-4031-b8cb-82c36cfc2daa",
+            "tipo": "cambio",
+            "fecha": 1795370375274,
+            "texto": "Movido de Cuerpo de Guardia a 1B",
+            "autor": "LuisDamar Martínez Hevia"
+          }
+        ],
         "checklists": {},
         "fotosCount": 0
       },
@@ -320,9 +328,9 @@
       },
       {
         "id": "2067477d-ad4a-4295-b836-37072dabb55b",
-        "texto": "Anónimo - Cuerpo de Guardia (Sin cama): Ántrax Dorsal ",
-        "sala": "Cuerpo de Guardia",
-        "cama": null,
+        "texto": "Emma Aviles Tamayo - 1B (Cama 14): Ántrax Dorsal ",
+        "sala": "1B",
+        "cama": "14",
         "completado": false,
         "pacienteId": "1795353801298"
       },
@@ -359,5 +367,5 @@
     ],
     "guardiaInicio": 1795182983540
   },
-  "actualizadoEn": 1795370347668
+  "actualizadoEn": 1795370375976
 }
