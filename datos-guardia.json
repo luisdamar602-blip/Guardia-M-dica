@@ -112,13 +112,13 @@
       },
       {
         "id": "1795353771590",
-        "nombre": "Anónimo",
+        "nombre": "Samantha Mendoza Gonzalez",
         "historiaClinica": null,
-        "edad": null,
+        "edad": 25,
         "sexo": null,
-        "cama": null,
+        "cama": "5",
         "diagnostico": "Colecistitis Aguda ",
-        "sala": "Cuerpo de Guardia",
+        "sala": "1B",
         "estado": "ingresado",
         "reporte": "de cuidado",
         "tipo": "Urgencia",
@@ -132,7 +132,15 @@
         "tareas": [],
         "comentarios": [],
         "dosis": [],
-        "timeline": [],
+        "timeline": [
+          {
+            "id": "63884a05-6478-47dc-b052-b20c5913c66b",
+            "tipo": "cambio",
+            "fecha": 1795370308957,
+            "texto": "Movido de Cuerpo de Guardia a 1B",
+            "autor": "LuisDamar Martínez Hevia"
+          }
+        ],
         "checklists": {},
         "fotosCount": 0
       },
@@ -288,9 +296,9 @@
       },
       {
         "id": "1a39b923-9687-4c6d-b465-0e5e92d797b1",
-        "texto": "Anónimo - Cuerpo de Guardia (Sin cama): Colecistitis Aguda ",
-        "sala": "Cuerpo de Guardia",
-        "cama": null,
+        "texto": "Samantha Mendoza Gonzalez - 1B (Cama 5): Colecistitis Aguda ",
+        "sala": "1B",
+        "cama": "5",
         "completado": false,
         "pacienteId": "1795353771590"
       },
@@ -343,5 +351,5 @@
     ],
     "guardiaInicio": 1795182983540
   },
-  "actualizadoEn": 1795370216668
+  "actualizadoEn": 1795370309660
 }
