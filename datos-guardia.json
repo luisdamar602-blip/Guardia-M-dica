@@ -28,18 +28,35 @@
         "reporte": "de cuidado",
         "tipo": "Urgencia",
         "egresado": false,
-        "operado": false,
+        "operado": true,
         "fallecido": false,
-        "pendienteOperar": true,
-        "cirugiaRealizada": null,
-        "diagnosticoOperatorio": null,
+        "pendienteOperar": false,
+        "cirugiaRealizada": "Colecistostomía",
+        "diagnosticoOperatorio": "Plastrón Vesicular",
         "comentariosOperacion": null,
         "tareas": [],
-        "comentarios": [],
+        "comentarios": [
+          {
+            "id": "6c0e58e9-3415-4137-a8ab-ceaa8ed4a5a1",
+            "texto": "[Post-operatorio] Sonda inadecuada\nRectal fina",
+            "fecha": 1795370187437,
+            "autor": "LuisDamar Martínez Hevia"
+          }
+        ],
         "dosis": [],
-        "timeline": [],
+        "timeline": [
+          {
+            "id": "891ea84b-c565-4994-bd97-c9e53beed4fd",
+            "tipo": "operacion",
+            "fecha": 1795370187438,
+            "texto": "Operado: Colecistostomía — Dx Op: Plastrón Vesicular",
+            "autor": "LuisDamar Martínez Hevia"
+          }
+        ],
         "checklists": {},
-        "fotosCount": 0
+        "fotosCount": 0,
+        "comentariosOperatorio": "Sonda inadecuada\nRectal fina",
+        "operadoFecha": 1795370187436
       },
       {
         "id": "1795353740764",
@@ -229,6 +246,32 @@
         "timeline": [],
         "checklists": {},
         "fotosCount": 0
+      },
+      {
+        "id": "389bf911-7ee8-429a-8632-94abbd2077c1",
+        "nombre": "Paciente",
+        "historiaClinica": null,
+        "edad": null,
+        "sexo": null,
+        "cama": "6",
+        "diagnostico": "OIM x Tumor de Colon",
+        "sala": "1B",
+        "estado": "ingreso_anterior",
+        "reporte": "de cuidado",
+        "tipo": "Urgencia",
+        "egresado": false,
+        "operado": false,
+        "fallecido": false,
+        "pendienteOperar": true,
+        "cirugiaRealizada": null,
+        "diagnosticoOperatorio": null,
+        "comentariosOperacion": null,
+        "tareas": [],
+        "comentarios": [],
+        "dosis": [],
+        "timeline": [],
+        "checklists": {},
+        "fotosCount": 0
       }
     ],
     "pendientes": [
@@ -237,8 +280,11 @@
         "texto": "Anónimo - 1A (Cama 24): Colecistitis Aguda ",
         "sala": "1A",
         "cama": "24",
-        "completado": false,
-        "pacienteId": "1795353713206"
+        "completado": true,
+        "pacienteId": "1795353713206",
+        "cirugiaRealizada": "Colecistostomía",
+        "diagnosticoOperatorio": "Plastrón Vesicular",
+        "comentariosOperatorio": "Sonda inadecuada\nRectal fina"
       },
       {
         "id": "1a39b923-9687-4c6d-b465-0e5e92d797b1",
@@ -271,6 +317,14 @@
         "cama": "1",
         "completado": false,
         "pacienteId": "1795353817881"
+      },
+      {
+        "id": "1de0b0b5-97d3-4f51-a25b-cc60d33fbabb",
+        "texto": "Paciente (1B, C6): OIM x Tumor de Colon",
+        "sala": "1B",
+        "cama": "6",
+        "completado": false,
+        "pacienteId": "389bf911-7ee8-429a-8632-94abbd2077c1"
       }
     ],
     "recados": [
@@ -289,5 +343,5 @@
     ],
     "guardiaInicio": 1795182983540
   },
-  "actualizadoEn": 1795355062441
+  "actualizadoEn": 1795370216668
 }
