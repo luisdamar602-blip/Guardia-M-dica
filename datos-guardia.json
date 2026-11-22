@@ -64,9 +64,9 @@
         "historiaClinica": null,
         "edad": null,
         "sexo": null,
-        "cama": "2",
+        "cama": "29",
         "diagnostico": "HDA",
-        "sala": "UCI-E",
+        "sala": "1A",
         "estado": "ingreso_anterior",
         "reporte": "grave",
         "tipo": "Urgencia",
@@ -80,7 +80,15 @@
         "tareas": [],
         "comentarios": [],
         "dosis": [],
-        "timeline": [],
+        "timeline": [
+          {
+            "id": "1aed56b8-71bd-44bf-a274-e82f54792d30",
+            "tipo": "cambio",
+            "fecha": 1795381344396,
+            "texto": "Movido de UCI-E a 1A",
+            "autor": "LuisDamar Martínez Hevia"
+          }
+        ],
         "checklists": {},
         "fotosCount": 0
       },
@@ -508,5 +516,5 @@
     ],
     "guardiaInicio": 1795182983540
   },
-  "actualizadoEn": 1795381305878
+  "actualizadoEn": 1795381345098
 }
