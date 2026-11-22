@@ -172,7 +172,7 @@
         "estado": "ingresado",
         "reporte": "de cuidado",
         "tipo": "Urgencia",
-        "egresado": false,
+        "egresado": true,
         "operado": false,
         "fallecido": false,
         "pendienteOperar": true,
@@ -195,6 +195,13 @@
             "tipo": "cambio",
             "fecha": 1795381106991,
             "texto": "Movido de Polivalente a SOP",
+            "autor": "LuisDamar Martínez Hevia"
+          },
+          {
+            "id": "ac7eee3c-f5a1-4a75-8403-f578f44979fa",
+            "tipo": "cambio",
+            "fecha": 1795383776823,
+            "texto": "Paciente egresado",
             "autor": "LuisDamar Martínez Hevia"
           }
         ],
@@ -457,14 +464,6 @@
         "pacienteId": "1795353771590"
       },
       {
-        "id": "6cd74066-eb91-4d6f-8401-c2843b699756",
-        "texto": "Leonardo Céspedes Castro - SOP (Sin cama): Hernia Inguinoescrotal derecha Atascada ",
-        "sala": "SOP",
-        "cama": null,
-        "completado": false,
-        "pacienteId": "1795353791020"
-      },
-      {
         "id": "2067477d-ad4a-4295-b836-37072dabb55b",
         "texto": "Emma Aviles Tamayo - 1B (Cama 14): Ántrax Dorsal ",
         "sala": "1B",
@@ -524,5 +523,5 @@
     ],
     "guardiaInicio": 1795182983540
   },
-  "actualizadoEn": 1795381365483
+  "actualizadoEn": 1795383777527
 }
