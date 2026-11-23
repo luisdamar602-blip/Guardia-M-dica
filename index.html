@@ -26,24 +26,34 @@
 *{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Oxygen,Ubuntu,sans-serif;-webkit-tap-highlight-color:transparent}
 body{background:var(--bg);color:var(--text);padding:12px;padding-bottom:calc(80px + var(--safe-bottom));min-height:100vh;min-height:100dvh}
 
-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;padding-bottom:12px;border-bottom:2px solid var(--border);flex-wrap:wrap;gap:8px}
-header h1{color:var(--primary);font-size:19px;font-weight:700;line-height:1.2}
+header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;padding-bottom:10px;border-bottom:2px solid var(--border);flex-wrap:wrap;gap:8px;position:relative}
+header h1{color:var(--primary);font-size:18px;font-weight:700;line-height:1.2}
 header p{font-size:11px;color:var(--text-light);margin-top:2px}
-.header-actions{display:flex;gap:5px;align-items:center;flex-wrap:wrap}
-.btn-icon{background:var(--primary);color:#fff;border:none;padding:6px 9px;border-radius:8px;font-size:11px;font-weight:600;cursor:pointer;white-space:nowrap;transition:all .2s}
+.header-actions{display:flex;gap:6px;align-items:center;flex-wrap:wrap;position:relative}
+.btn-icon{background:var(--primary);color:#fff;border:none;padding:6px 10px;border-radius:8px;font-size:11px;font-weight:600;cursor:pointer;white-space:nowrap;transition:all .2s}
 .btn-icon:active{transform:scale(.95)}
 .btn-icon.outline{background:transparent;color:var(--primary);border:1px solid var(--primary)}
 .btn-icon.danger{background:var(--danger)}
 .btn-icon.success{background:var(--success)}
 .btn-icon.warning{background:var(--warning)}
 
+.more-menu-wrap{position:relative}
+.more-menu-dropdown{display:none;position:absolute;top:110%;right:0;background:#fff;border:1px solid var(--border);border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.15);min-width:170px;z-index:500;padding:6px;flex-direction:column;gap:4px}
+.more-menu-dropdown.open{display:flex}
+.more-menu-item{background:none;border:none;text-align:left;padding:8px 10px;border-radius:7px;font-size:12px;font-weight:600;color:var(--text);cursor:pointer;display:flex;align-items:center;gap:8px;width:100%}
+.more-menu-item:hover{background:#f1f5f9}
+.more-menu-item.danger{color:var(--danger)}
+
 .perfil-badge{display:flex;align-items:center;gap:6px;background:var(--primary-light);color:var(--primary-dark);padding:4px 10px;border-radius:20px;font-size:11px;font-weight:600;cursor:pointer}
 .perfil-badge .avatar{width:20px;height:20px;border-radius:50%;background:var(--primary);color:#fff;display:flex;align-items:center;justify-content:center;font-size:10px}
 
+.dash-top-bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;padding:0 2px}
+.dash-toggle-btn{background:none;border:none;color:var(--text-light);font-size:11px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:4px;padding:2px 4px}
 .dashboard-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
-.dash-card{background:var(--card-bg);border-radius:var(--radius);padding:10px 6px;box-shadow:var(--shadow);text-align:center;border:1px solid var(--border);transition:transform .15s}
+.dashboard-grid.collapsed{display:none}
+.dash-card{background:var(--card-bg);border-radius:var(--radius);padding:9px 6px;box-shadow:var(--shadow);text-align:center;border:1px solid var(--border);transition:transform .15s}
 .dash-card:active{transform:scale(.95)}
-.dash-card .number{font-size:22px;font-weight:700;color:var(--primary);line-height:1.2}
+.dash-card .number{font-size:20px;font-weight:700;color:var(--primary);line-height:1.2}
 .dash-card .label{font-size:9px;color:var(--text-light);margin-top:2px;line-height:1.3}
 .dash-card.danger .number{color:var(--danger)}
 .dash-card.success .number{color:var(--success)}
@@ -52,7 +62,7 @@ header p{font-size:11px;color:var(--text-light);margin-top:2px}
 .dash-card.polivalente .number{color:var(--polivalente)}
 .dash-card.sop .number{color:var(--sop)}
 
-.tabs{display:flex;gap:6px;margin-bottom:14px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding-bottom:4px}
+.tabs{display:flex;gap:6px;margin-bottom:12px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding-bottom:4px}
 .tabs::-webkit-scrollbar{display:none}
 .tab-btn{padding:8px 14px;border-radius:8px;cursor:pointer;font-weight:600;font-size:12px;transition:all .2s;background:var(--card-bg);color:var(--text-light);border:1px solid var(--border);white-space:nowrap;flex-shrink:0}
 .tab-btn:active{transform:scale(.95)}
@@ -60,11 +70,15 @@ header p{font-size:11px;color:var(--text-light);margin-top:2px}
 .tab-content{display:none}
 .tab-content.active{display:block}
 
-.search-container{margin-bottom:10px;display:flex;gap:6px;flex-wrap:wrap}
-.search-input{flex:1;padding:9px 12px;border:1px solid var(--border);border-radius:8px;font-size:13px;background:var(--card-bg);min-width:150px}
+.search-container{margin-bottom:10px;display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.search-input{flex:1;padding:9px 12px;border:1px solid var(--border);border-radius:8px;font-size:13px;background:var(--card-bg);min-width:130px;margin-bottom:0}
 .search-input:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(0,119,182,.1)}
+.sort-select{width:auto;min-width:105px;padding:8px 10px;border:1px solid var(--border);border-radius:8px;font-size:12px;background:var(--card-bg);color:var(--text);margin-bottom:0;cursor:pointer}
 .filtro-toggle{background:var(--card-bg);border:1px solid var(--border);border-radius:8px;padding:8px 10px;font-size:12px;cursor:pointer;color:var(--text-light);white-space:nowrap}
 .filtro-toggle.active{background:var(--primary);color:#fff;border-color:var(--primary)}
+.ronda-btn{background:var(--primary-light);border:1px solid #bae6fd;color:var(--primary-dark);border-radius:8px;padding:8px 10px;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap}
+.ronda-btn:active{transform:scale(.96)}
+
 .filtros-panel{display:none;background:var(--card-bg);border:1px solid var(--border);border-radius:8px;padding:10px;margin-bottom:10px;flex-wrap:wrap;gap:8px}
 .filtros-panel.active{display:flex}
 .filtros-panel select,.filtros-panel input[type=date]{flex:1;min-width:110px;padding:7px;border:1px solid var(--border);border-radius:6px;font-size:12px;margin:0}
@@ -109,19 +123,35 @@ header p{font-size:11px;color:var(--text-light);margin-top:2px}
 .badge-tipo{background:#e0f2fe;color:#0369a1}
 .badge-nota{background:#dbeafe;color:#1e40af;cursor:pointer}
 .badge-foto{background:#fce7f3;color:#9d174d;cursor:pointer}
+.badge-dosis-vencida{background:#fee2e2;color:#b91c1c;cursor:pointer}
+.badge-dosis-proxima{background:#fef3c7;color:#92400e;cursor:pointer}
 .actions-right{display:flex;gap:4px;flex-wrap:wrap;margin-top:6px;justify-content:flex-end;align-items:center}
-.btn-action{background:none;border:none;cursor:pointer;font-size:16px;padding:4px 6px;border-radius:4px}
-.btn-action:active{background:rgba(0,0,0,.05)}
-.select-transfer-rapido{font-size:11px;padding:4px 6px;margin-top:4px;width:auto;max-width:120px;border:1px solid var(--border);border-radius:4px;background:#fff}
+.btn-action{background:none;border:none;cursor:pointer;font-size:15px;padding:4px 6px;border-radius:6px}
+.btn-action:active{background:rgba(0,0,0,.08)}
+.btn-ubicacion-chip{background:#e0f2fe;color:#0369a1;border:1px solid #bae6fd;border-radius:6px;padding:3px 8px;font-size:11px;font-weight:600;cursor:pointer}
+.btn-ubicacion-chip:active{transform:scale(.96)}
+
+.extra-actions-panel{display:none;flex-wrap:wrap;gap:4px;margin-top:6px;padding-top:6px;border-top:1px dashed var(--border);justify-content:flex-end}
+.extra-actions-panel.open{display:flex}
+
+.collapsible-section{border:1px solid var(--border);border-radius:8px;padding:8px 10px;background:#f8fafc;margin-bottom:10px}
+.collapsible-header{display:flex;justify-content:space-between;align-items:center;cursor:pointer;font-weight:600;font-size:13px;color:var(--text);user-select:none}
+.collapsible-body{display:none;margin-top:8px}
+.collapsible-body.open{display:block}
+
+.chips-row{display:flex;gap:5px;flex-wrap:wrap;margin:-4px 0 10px 0}
+.quick-chip{background:#f1f5f9;border:1px solid var(--border);color:var(--text);border-radius:14px;padding:3px 9px;font-size:11px;cursor:pointer;transition:all .15s}
+.quick-chip:active{background:var(--primary-light);border-color:var(--primary)}
 
 .task-list{list-style:none}
 .task-item{display:flex;justify-content:space-between;align-items:center;padding:8px;border-bottom:1px solid var(--border);font-size:13px;gap:8px}
 .task-item:last-child{border-bottom:none}
 .task-item.completed{text-decoration:line-through;color:#94a3b8;background:#f8fafc}
 .task-text{flex:1;word-break:break-word}
-.task-actions{display:flex;gap:2px;flex-shrink:0}
-.btn-task{background:none;border:none;cursor:pointer;font-size:16px;padding:2px 4px}
-.box-task{background:var(--card-bg);border:1px solid var(--border);border-radius:var(--radius);padding:12px;box-shadow:var(--shadow)}
+.task-actions{display:flex;gap:2px;flex-shrink:0;align-items:center}
+.btn-task{background:none;border:none;cursor:pointer;font-size:15px;padding:2px 4px;border-radius:4px}
+.btn-task:active{background:rgba(0,0,0,.06)}
+.box-task{background:var(--card-bg);border:1px solid var(--border);border-radius:var(--radius);padding:12px;box-shadow:var(--shadow);margin-bottom:12px}
 .box-task h2{font-size:15px;font-weight:600;color:var(--text);display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
 .stats-badge{background:var(--primary);color:#fff;padding:1px 10px;border-radius:12px;font-size:12px}
 
@@ -176,7 +206,7 @@ textarea{resize:vertical;min-height:50px;font-family:inherit}
 #listaGeneralContainer td{padding:8px 6px;border-bottom:1px solid var(--border);vertical-align:middle}
 #listaGeneralContainer tr:last-child td{border-bottom:none}
 
-.tarea-item{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-light);padding:2px 0}
+.tarea-item{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-light);padding:4px 0}
 .tarea-item.completada{text-decoration:line-through;color:#94a3b8}
 .tarea-item input[type=checkbox]{width:16px;height:16px;margin:0;cursor:pointer;flex-shrink:0}
 .tarea-item .tarea-text{flex:1;word-break:break-word}
@@ -208,8 +238,14 @@ textarea{resize:vertical;min-height:50px;font-family:inherit}
 .sala-item-drag .drag-handle{color:#94a3b8;margin-right:10px;font-size:18px}
 .sala-item-drag.dragging{opacity:.5;border:2px dashed var(--primary)}
 
-#fileInput{display:none!important;position:absolute;width:0;height:0;opacity:0;pointer-events:none}
 #fotoInput{display:none!important;position:absolute;width:0;height:0;opacity:0;pointer-events:none}
+
+/* RONDA PASE DE VISITA */
+.ronda-card{background:#f8fafc;border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:12px}
+.ronda-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;gap:8px}
+.ronda-counter{font-size:11px;font-weight:700;background:var(--primary-light);color:var(--primary-dark);padding:3px 10px;border-radius:12px}
+.ronda-nav{display:flex;gap:8px;margin-top:10px}
+.ronda-nav button{flex:1}
 
 /* TIMELINE */
 .timeline{position:relative;padding-left:24px;margin-top:8px}
@@ -247,7 +283,6 @@ textarea{resize:vertical;min-height:50px;font-family:inherit}
 
 /* PERFIL */
 .perfil-avatar{width:64px;height:64px;border-radius:50%;background:var(--primary);color:#fff;display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:700;margin:0 auto 10px}
-.sync-code{background:#f8fafc;border:1px dashed var(--border);border-radius:8px;padding:10px;font-family:monospace;font-size:11px;word-break:break-all;color:var(--text-light);margin:8px 0}
 
 /* STATS */
 .stats-canvas-wrap{background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:12px;margin-bottom:12px;box-shadow:var(--shadow)}
@@ -256,7 +291,7 @@ textarea{resize:vertical;min-height:50px;font-family:inherit}
 /* PRINT */
 @media print{
   body{padding:20px!important;background:#fff!important}
-  .floating-container,.tabs,.search-container,.btn-icon,.btn-main,.btn-action,.actions-right,.header-actions,.modal-overlay,.perfil-badge,.filtro-toggle{display:none!important}
+  .floating-container,.tabs,.search-container,.btn-icon,.btn-main,.btn-action,.actions-right,.header-actions,.modal-overlay,.perfil-badge,.filtro-toggle,.dash-top-bar,.more-menu-wrap,.ronda-btn{display:none!important}
   .salas-container{display:block!important}
   .sala-card{break-inside:avoid;page-break-inside:avoid;margin-bottom:20px!important}
   .dashboard-grid{display:grid!important;grid-template-columns:repeat(3,1fr)!important}
@@ -279,8 +314,22 @@ textarea{resize:vertical;min-height:50px;font-family:inherit}
     <p>Cirugía General · <span id="ultimaActualizacion">Actualizado</span></p>
   </div>
   <div class="header-actions">
-      <!-- Botón dentro de <div class="header-actions"> -->
-<button class="btn-icon outline" id="btnSyncGitHub" onclick="abrirModalSyncGitHub()">☁️ GitHub</button>
+    <div class="perfil-badge" onclick="abrirModalPerfilPrellenado()" id="perfilBadge">
+      <div class="avatar" id="perfilAvatar">?</div>
+      <span id="perfilNombre">Perfil</span>
+    </div>
+    <button class="btn-icon outline" id="btnSyncGitHub" onclick="abrirModalSyncGitHub()">☁️ GitHub</button>
+    <button class="btn-icon" onclick="abrirModal('modalGestionSalas')">⚙️ Salas</button>
+    <div class="more-menu-wrap">
+      <button class="btn-icon outline" id="btnMoreMenu" onclick="toggleMoreMenu(event)">⋯</button>
+      <div class="more-menu-dropdown" id="moreMenuDropdown">
+        <button class="more-menu-item" onclick="closeMoreMenu();generarPDFInforme()">📄 PDF Informe</button>
+        <button class="more-menu-item" onclick="closeMoreMenu();abrirModal('modalBackupCifrado')">🔐 Backup cifrado</button>
+        <button class="more-menu-item danger" onclick="closeMoreMenu();reiniciarGuardia()">🔄 Reiniciar guardia</button>
+      </div>
+    </div>
+  </div>
+</header>
 
 <!-- Modal de Sincronización GitHub -->
 <div class="modal-overlay" id="modalSyncGitHub" onclick="cerrarModalAfuera(event,'modalSyncGitHub')">
@@ -319,23 +368,17 @@ textarea{resize:vertical;min-height:50px;font-family:inherit}
     </div>
   </div>
 </div>
-    <div class="perfil-badge" onclick="abrirModalPerfilPrellenado()" id="perfilBadge">
-      <div class="avatar" id="perfilAvatar">?</div>
-      <span id="perfilNombre">Perfil</span>
-    </div>
-    <button class="btn-icon success" onclick="exportarDatos()">📤</button>
-    <button class="btn-icon warning" onclick="importarDatos()">📥</button>
-    <button class="btn-icon outline" onclick="abrirModal('modalBackupCifrado')">🔐</button>
-    <button class="btn-icon outline" onclick="generarPDFInforme()">📄</button>
-    <button class="btn-icon danger" onclick="reiniciarGuardia()">🔄</button>
-    <button class="btn-icon" onclick="abrirModal('modalGestionSalas')">⚙️</button>
-  </div>
-</header>
+
 <div id="bannerSoloLectura" style="display:none;background:#0c4a6e;color:#fff;padding:8px 12px;border-radius:8px;margin-bottom:12px;font-size:12px;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;">
   <span>👁️ <strong>Modo Solo Lectura:</strong> Estás viendo los datos sincronizados. Para editar, añade un Token en ☁️ GitHub.</span>
   <button type="button" class="btn-icon" style="background:#0284c7;" onclick="descargarDesdeGitHub(true)">🔄 Actualizar</button>
 </div>
 
+<div class="dash-top-bar">
+  <button type="button" class="dash-toggle-btn" id="btnToggleDash" onclick="toggleDashboard()">
+    <span id="dashToggleIcon">▾</span> Resumen de guardia
+  </button>
+</div>
 <div class="dashboard-grid" id="dashboardGrid">
   <div class="dash-card"><div class="number" id="totalIngresos">0</div><div class="label">📥 Ingresos</div></div>
   <div class="dash-card operado"><div class="number" id="totalCirugias">0</div><div class="label">🩸 Cirugías</div></div>
@@ -356,6 +399,12 @@ textarea{resize:vertical;min-height:50px;font-family:inherit}
 <div id="tab-salas" class="tab-content active">
   <div class="search-container">
     <input type="text" id="globalSearch" class="search-input" placeholder="🔍 Buscar paciente..." oninput="filtrarPacientes()">
+    <select id="ordenSalasSelect" class="sort-select" onchange="renderizarSalas();filtrarPacientes();" title="Ordenar pacientes">
+      <option value="cama">Orden: Cama</option>
+      <option value="gravedad">Orden: Gravedad</option>
+      <option value="reciente">Orden: Recientes</option>
+    </select>
+    <button class="ronda-btn" onclick="abrirModoRonda()" title="Pase de visita rápido">🩺 Ronda</button>
     <button class="filtro-toggle" onclick="toggleFiltros()">⚙️ Filtros</button>
   </div>
   <div class="filtros-panel" id="filtrosPanel">
@@ -386,6 +435,7 @@ textarea{resize:vertical;min-height:50px;font-family:inherit}
     <select id="filtroExtra" onchange="filtrarPacientes()">
       <option value="">Extra: ninguno</option>
       <option value="tareas">Solo con tareas pendientes</option>
+      <option value="dosis">Con medicación próxima/vencida</option>
       <option value="fotos">Solo con fotos</option>
       <option value="comentarios">Solo con comentarios</option>
     </select>
@@ -405,6 +455,11 @@ textarea{resize:vertical;min-height:50px;font-family:inherit}
     <h2>⚡ Pendientes a Operar <span class="stats-badge" id="pendientesCount">0</span></h2>
     <ul class="task-list" id="listaPendientes"></ul>
     <button class="btn-main mt-8" onclick="abrirModal('modalPendiente')">➕ Añadir Pendiente</button>
+  </div>
+
+  <div class="box-task">
+    <h2>📋 Tareas de Pacientes <span class="stats-badge" id="tareasGlobalesCount">0</span></h2>
+    <div id="listaTareasGlobales"></div>
   </div>
 </div>
 
@@ -434,8 +489,7 @@ textarea{resize:vertical;min-height:50px;font-family:inherit}
 <div class="floating-container">
   <button class="btn-floating" id="mainFab" onclick="toggleFabMenu()">+</button>
   <div class="floating-menu" id="fabMenu">
-      <button class="btn-menu-item" onclick="enviarDatosPorWhatsApp()" style="background:#25D366;color:#fff;">💬 Sincronizar por WhatsApp</button>
-
+    <button class="btn-menu-item" onclick="enviarDatosPorWhatsApp()" style="background:#25D366;color:#fff;">💬 Sincronizar por WhatsApp</button>
     <button class="btn-menu-item btn-menu-report" onclick="enviarInformeGuardia()">📋 Informe Guardia</button>
     <button class="btn-menu-item btn-menu-entrante" onclick="enviarInformeEntrante()">📋 Informe Entrante</button>
     <button class="btn-menu-item" onclick="abrirModal('modalPaciente')">📥 Añadir Paciente</button>
@@ -444,8 +498,39 @@ textarea{resize:vertical;min-height:50px;font-family:inherit}
   </div>
 </div>
 
-<input type="file" id="fileInput" accept=".json" onchange="procesarImportacion(event)">
 <input type="file" id="fotoInput" accept="image/*" capture="environment" onchange="procesarFoto(event)">
+
+<!-- MODAL: PASE DE VISITA RÁPIDO (MODO RONDA) -->
+<div class="modal-overlay" id="modalModoRonda" onclick="cerrarModalAfuera(event,'modalModoRonda')">
+  <div class="modal-content">
+    <span class="modal-close" onclick="cerrarModal('modalModoRonda')">&times;</span>
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
+      <h2 style="margin-bottom:0;">🩺 Pase de Visita</h2>
+      <span class="ronda-counter" id="rondaContador">1 / 1</span>
+    </div>
+    <select id="rondaFiltroSala" onchange="iniciarRondaPorSala()" style="margin-bottom:10px;">
+      <option value="">Todas las salas</option>
+    </select>
+    <div id="rondaContenido"></div>
+  </div>
+</div>
+
+<!-- MODAL: CAMBIO RÁPIDO DE LOCALIZACIÓN -->
+<div class="modal-overlay" id="modalUbicacionRapida" onclick="cerrarModalAfuera(event,'modalUbicacionRapida')">
+  <div class="modal-content">
+    <span class="modal-close" onclick="cerrarModal('modalUbicacionRapida')">&times;</span>
+    <h2>📍 Cambiar Localización</h2>
+    <p id="ubicacionPacienteNombre" style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:10px;"></p>
+    <input type="hidden" id="ubicacionPacienteId">
+    <label style="font-size:12px;color:var(--text-light);display:block;margin-bottom:4px;">Sala</label>
+    <select id="ubicacionSalaSelect" onchange="toggleCampoCamaUbicacion()"></select>
+    <div id="ubicacionCamaWrapper" class="campo-cama">
+      <label style="font-size:12px;color:var(--text-light);display:block;margin-bottom:4px;">Cama (opcional)</label>
+      <input type="number" id="ubicacionCamaInput" placeholder="Número de cama" min="1">
+    </div>
+    <button type="button" class="btn-main" onclick="guardarUbicacionRapida()">✅ Guardar localización</button>
+  </div>
+</div>
 
 <!-- MODAL: GESTIÓN SALAS -->
 <div class="modal-overlay" id="modalGestionSalas" onclick="cerrarModalAfuera(event,'modalGestionSalas')">
@@ -499,6 +584,13 @@ textarea{resize:vertical;min-height:50px;font-family:inherit}
         <span id="camaLabel">💡 Opcional - solo para referencia</span>
       </div>
       <input type="text" id="pDiagnostico" placeholder="Diagnóstico u Operación" required>
+      <div class="chips-row">
+        <button type="button" class="quick-chip" onclick="insertarChip('pDiagnostico','Apendicitis aguda')">Apendicitis aguda</button>
+        <button type="button" class="quick-chip" onclick="insertarChip('pDiagnostico','Colecistitis aguda')">Colecistitis aguda</button>
+        <button type="button" class="quick-chip" onclick="insertarChip('pDiagnostico','Obstrucción intestinal')">Obstrucción intestinal</button>
+        <button type="button" class="quick-chip" onclick="insertarChip('pDiagnostico','Hernia encarcelada')">Hernia encarcelada</button>
+        <button type="button" class="quick-chip" onclick="insertarChip('pDiagnostico','Absceso / Celulitis')">Absceso / Celulitis</button>
+      </div>
       <div class="checkbox-group" onclick="toggleCheckbox(event)">
         <input type="checkbox" id="pPendienteOperar">
         <span class="checkmark"></span>
@@ -521,24 +613,38 @@ textarea{resize:vertical;min-height:50px;font-family:inherit}
         <option value="Emergencia">Emergencia</option>
       </select>
 
-      <hr style="border:none;border-top:2px dashed var(--border);margin:12px 0;">
-      <div style="margin-bottom:8px;">
-        <label style="font-weight:600;font-size:14px;color:var(--text);display:block;margin-bottom:6px;">💬 Comentarios / Notas</label>
-        <textarea id="pNuevoComentario" placeholder="Ej: Alergia a penicilina..." rows="3"></textarea>
-        <button type="button" class="btn-main btn-sm mt-8" style="width:100%;margin-bottom:10px;" onclick="añadirComentarioPaciente()">➕ Añadir comentario</button>
-        <div id="pComentariosHistorial" class="comentarios-historial">
-          <div class="comentario-vacio">Sin comentarios previos</div>
+      <div class="collapsible-section">
+        <div class="collapsible-header" onclick="toggleCollapsible('secComentariosBody','secComentariosArrow')">
+          <span id="secComentariosTitulo">💬 Comentarios / Notas</span>
+          <span id="secComentariosArrow">▸</span>
+        </div>
+        <div class="collapsible-body" id="secComentariosBody">
+          <div class="chips-row" style="margin-top:0;">
+            <button type="button" class="quick-chip" onclick="insertarChip('pNuevoComentario','NPO + Hidratación IV')">NPO + Hidratación</button>
+            <button type="button" class="quick-chip" onclick="insertarChip('pNuevoComentario','Pendiente TAC')">Pendiente TAC</button>
+            <button type="button" class="quick-chip" onclick="insertarChip('pNuevoComentario','Pendiente Analítica / Coagulación')">Analítica / Coag</button>
+            <button type="button" class="quick-chip" onclick="insertarChip('pNuevoComentario','Valorado por Anestesia')">Anestesia OK</button>
+          </div>
+          <textarea id="pNuevoComentario" placeholder="Ej: Alergia a penicilina..." rows="2"></textarea>
+          <button type="button" class="btn-main btn-sm" style="width:100%;margin-bottom:8px;" onclick="añadirComentarioPaciente()">➕ Añadir comentario</button>
+          <div id="pComentariosHistorial" class="comentarios-historial">
+            <div class="comentario-vacio">Sin comentarios previos</div>
+          </div>
         </div>
       </div>
 
-      <hr style="border:none;border-top:2px dashed var(--border);margin:12px 0;">
-      <div style="margin-bottom:8px;">
-        <label style="font-weight:600;font-size:14px;color:var(--text);">📋 Tareas Pendientes</label>
-        <div class="add-tarea-row">
-          <input type="text" id="pNuevaTarea" placeholder="Escribe una tarea...">
-          <button type="button" class="btn-main btn-sm" onclick="añadirTareaPaciente()">➕</button>
+      <div class="collapsible-section">
+        <div class="collapsible-header" onclick="toggleCollapsible('secTareasBody','secTareasArrow')">
+          <span id="secTareasTitulo">📋 Tareas Pendientes</span>
+          <span id="secTareasArrow">▸</span>
         </div>
-        <div id="pListaTareas" style="margin-top:8px;"></div>
+        <div class="collapsible-body" id="secTareasBody">
+          <div class="add-tarea-row">
+            <input type="text" id="pNuevaTarea" placeholder="Escribe una tarea...">
+            <button type="button" class="btn-main btn-sm" onclick="añadirTareaPaciente()">➕</button>
+          </div>
+          <div id="pListaTareas" style="margin-top:8px;"></div>
+        </div>
       </div>
 
       <button type="submit" class="btn-main" id="btnSubmitPaciente">Admitir Paciente</button>
@@ -575,6 +681,17 @@ textarea{resize:vertical;min-height:50px;font-family:inherit}
   </div>
 </div>
 
+<!-- MODAL: EDITAR RECADO -->
+<div class="modal-overlay" id="modalEditarRecado" onclick="cerrarModalAfuera(event,'modalEditarRecado')">
+  <div class="modal-content">
+    <span class="modal-close" onclick="cerrarModal('modalEditarRecado')">&times;</span>
+    <h2>✏️ Editar Recado</h2>
+    <input type="hidden" id="editRecadoId">
+    <input type="text" id="editRecadoTexto" required>
+    <button class="btn-main" onclick="guardarEdicionRecado()">Actualizar</button>
+  </div>
+</div>
+
 <!-- MODAL: REGISTRAR OPERACIÓN -->
 <div class="modal-overlay" id="modalRegistrarOperacion" onclick="cerrarModalAfuera(event,'modalRegistrarOperacion')">
   <div class="modal-content">
@@ -582,8 +699,38 @@ textarea{resize:vertical;min-height:50px;font-family:inherit}
     <h2>🩸 Registrar Operación</h2>
     <input type="hidden" id="operacionPendienteId">
     <input type="text" id="opCirugia" placeholder="Cirugía realizada" required>
+    <div class="chips-row">
+      <button type="button" class="quick-chip" onclick="insertarChip('opCirugia','Apendicectomía laparoscópica')">Apendicectomía lap</button>
+      <button type="button" class="quick-chip" onclick="insertarChip('opCirugia','Colecistectomía laparoscópica')">Colecistectomía lap</button>
+      <button type="button" class="quick-chip" onclick="insertarChip('opCirugia','Hernioplastia')">Hernioplastia</button>
+      <button type="button" class="quick-chip" onclick="insertarChip('opCirugia','Laparotomía exploradora')">Laparotomía</button>
+      <button type="button" class="quick-chip" onclick="insertarChip('opCirugia','Drenaje de absceso')">Drenaje absceso</button>
+    </div>
     <input type="text" id="opDiagnostico" placeholder="Diagnóstico operatorio" required>
-    <textarea id="opComentarios" placeholder="Comentarios de la operación (opcional)" rows="4"></textarea>
+    <textarea id="opComentarios" placeholder="Comentarios de la operación (opcional)" rows="3"></textarea>
+
+    <div id="opOpcionesPostWrapper" style="display:none;background:#f8fafc;border:1px solid var(--border);border-radius:8px;padding:10px;margin-bottom:10px;">
+      <div style="font-size:12px;font-weight:600;color:var(--text);margin-bottom:6px;">🩺 Actualizar tras la operación (opcional)</div>
+      <label style="font-size:11px;color:var(--text-light);display:block;margin-bottom:3px;">Cambiar reporte / gravedad</label>
+      <select id="opNuevoReporte" style="margin-bottom:8px;">
+        <option value="">Mantener gravedad actual</option>
+        <option value="de cuidado">De cuidado</option>
+        <option value="grave estable">Grave estable</option>
+        <option value="grave">Grave</option>
+        <option value="critico">Crítico</option>
+      </select>
+      <div class="form-row">
+        <div>
+          <label style="font-size:11px;color:var(--text-light);display:block;margin-bottom:3px;">Sala</label>
+          <select id="opNuevaSala" onchange="toggleCampoCamaOperacion()" style="margin-bottom:0;"></select>
+        </div>
+        <div id="opCamaWrapper">
+          <label style="font-size:11px;color:var(--text-light);display:block;margin-bottom:3px;">Cama</label>
+          <input type="number" id="opNuevaCama" placeholder="Nº cama" min="1" style="margin-bottom:0;">
+        </div>
+      </div>
+    </div>
+
     <div style="margin:8px 0;padding:8px 12px;background:#f0fdf4;border-radius:6px;border-left:3px solid var(--success);font-size:13px;color:var(--text-light);">
       ℹ️ Registrando para: <span id="opPendienteTexto" style="font-weight:600;color:var(--text);">-</span>
     </div>
@@ -594,14 +741,13 @@ textarea{resize:vertical;min-height:50px;font-family:inherit}
   </div>
 </div>
 
-<!-- MODAL: RECADO -->
+<!-- MODAL: RECADO (SIN SELECTOR DE SALA) -->
 <div class="modal-overlay" id="modalRecado" onclick="cerrarModalAfuera(event,'modalRecado')">
   <div class="modal-content">
     <span class="modal-close" onclick="cerrarModal('modalRecado')">&times;</span>
     <h2>📝 Nuevo Recado</h2>
     <form onsubmit="agregarRecado(event)">
-      <input type="text" id="inputRecado" placeholder="Ej: Revisar drenaje Cama 4" required>
-      <select id="inputRecadoSala"><option value="" selected>Sin sala (opcional)</option></select>
+      <input type="text" id="inputRecado" placeholder="Ej: Revisar drenaje o pedir analítica" required>
       <button type="submit" class="btn-main">Añadir</button>
     </form>
   </div>
@@ -784,6 +930,7 @@ textarea{resize:vertical;min-height:50px;font-family:inherit}
     </div>
   </div>
 </div>
+
 <script>
 /* ============================================================
    CONFIG GLOBAL
@@ -791,6 +938,7 @@ textarea{resize:vertical;min-height:50px;font-family:inherit}
 const SCHEMA_VERSION = 8;
 const STORAGE_KEY = 'guardiaCirugiaData';
 const PERFIL_KEY = 'guardiaPerfil';
+const DASH_COLLAPSED_KEY = 'guardiaDashCollapsed';
 const DB_NAME = 'guardiaDB';
 const DB_VERSION = 1;
 const STORE_FOTOS = 'fotos';
@@ -802,10 +950,10 @@ let comentariosTemporales = [];
 let perfil = { nombre: '', rol: 'R2' };
 
 const SALAS_SIN_CAMA = ['Cuerpo de Guardia','Sala de Espera','Quirófano','Reanimación'];
-const ESTADO_BADGE_CLASS = {ingresado:'badge-estado-ingresado',observacion:'badge-estado-observacion',ingreso_anterior:'badge-estado-ingreso-anterior',operado:'badge-estado-operado',pendiente_op:'badge-estado-pendiente-op',fallecido:'badge-estado-fallecido'};
+const PESO_GRAVEDAD = { 'critico': 4, 'grave': 3, 'grave estable': 2, 'de cuidado': 1 };
 
 /* ============================================================
-   UTILIDADES
+   UTILIDADES & UI AMENA
 ============================================================ */
 function esc(s){if(s==null)return'';return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 function uid(){return crypto.randomUUID ? crypto.randomUUID() : Date.now()+'-'+Math.random().toString(36).slice(2);}
@@ -822,6 +970,325 @@ function getEstadoBadge(p){
   if(p.estado==='observacion')return`<span class="badge badge-estado-observacion">🔍 OBS</span>`;
   if(p.estado==='ingreso_anterior')return`<span class="badge badge-estado-ingreso-anterior">📋 ING ANT</span>`;
   return`<span class="badge badge-estado-ingresado">🏥 ING</span>`;
+}
+
+function insertarChip(inputId, texto){
+  const el = document.getElementById(inputId);
+  if(!el)return;
+  const val = el.value.trim();
+  if(!val) el.value = texto;
+  else if(!val.toLowerCase().includes(texto.toLowerCase())) el.value = val + ' · ' + texto;
+  el.focus();
+}
+
+function toggleMoreMenu(e){
+  if(e)e.stopPropagation();
+  const dd = document.getElementById('moreMenuDropdown');
+  if(dd)dd.classList.toggle('open');
+}
+function closeMoreMenu(){
+  const dd = document.getElementById('moreMenuDropdown');
+  if(dd)dd.classList.remove('open');
+}
+document.addEventListener('click',()=>closeMoreMenu());
+
+function toggleDashboard(){
+  const grid = document.getElementById('dashboardGrid');
+  const icon = document.getElementById('dashToggleIcon');
+  if(!grid)return;
+  const isCollapsed = grid.classList.toggle('collapsed');
+  if(icon)icon.textContent = isCollapsed ? '▸' : '▾';
+  localStorage.setItem(DASH_COLLAPSED_KEY, isCollapsed ? '1' : '0');
+}
+function cargarEstadoDashboard(){
+  const saved = localStorage.getItem(DASH_COLLAPSED_KEY);
+  const grid = document.getElementById('dashboardGrid');
+  const icon = document.getElementById('dashToggleIcon');
+  if(!grid)return;
+  const shouldCollapse = saved === null ? true : saved === '1';
+  grid.classList.toggle('collapsed', shouldCollapse);
+  if(icon)icon.textContent = shouldCollapse ? '▸' : '▾';
+}
+
+function toggleCollapsible(bodyId, arrowId){
+  const body = document.getElementById(bodyId);
+  const arrow = document.getElementById(arrowId);
+  if(!body)return;
+  const open = body.classList.toggle('open');
+  if(arrow)arrow.textContent = open ? '▾' : '▸';
+}
+function setCollapsibleState(bodyId, arrowId, open){
+  const body = document.getElementById(bodyId);
+  const arrow = document.getElementById(arrowId);
+  if(body)body.classList.toggle('open', Boolean(open));
+  if(arrow)arrow.textContent = open ? '▾' : '▸';
+}
+
+function toggleExtraActions(pacienteId){
+  const panel = document.getElementById('extra-actions-'+pacienteId);
+  if(panel)panel.classList.toggle('open');
+}
+
+/* ============================================================
+   ALERTAS DE DOSIS EN TARJETA
+============================================================ */
+function getEstadoDosisPaciente(p){
+  const lista = Array.isArray(p.dosis) ? p.dosis : [];
+  if(lista.length === 0) return { vencidas: 0, proximas: 0, textoBadge: '', claseBadge: '' };
+  const ahora = Date.now();
+  let vencidas = 0;
+  let proximas = 0;
+  let minMinutos = Infinity;
+
+  lista.forEach(d => {
+    const freq = d.frecuenciaHoras || 8;
+    const ultima = d.ultimaDosis || ahora;
+    const proxima = ultima + freq * 3600000;
+    const diffMs = proxima - ahora;
+    if(diffMs < 0){
+      vencidas++;
+    } else if(diffMs <= 3600000){
+      proximas++;
+      minMinutos = Math.min(minMinutos, Math.max(1, Math.round(diffMs / 60000)));
+    }
+  });
+
+  if(vencidas > 0){
+    return {
+      vencidas,
+      proximas,
+      textoBadge: `💊 ${vencidas} vencida${vencidas>1?'s':''}`,
+      claseBadge: 'badge-dosis-vencida'
+    };
+  }
+  if(proximas > 0){
+    return {
+      vencidas: 0,
+      proximas,
+      textoBadge: `💊 en ${minMinutos}m`,
+      claseBadge: 'badge-dosis-proxima'
+    };
+  }
+  return { vencidas: 0, proximas: 0, textoBadge: '', claseBadge: '' };
+}
+
+/* ============================================================
+   PASE DE VISITA RÁPIDO (MODO RONDA)
+============================================================ */
+let rondaLista = [];
+let rondaIndice = 0;
+
+function abrirModoRonda(){
+  const selSala = document.getElementById('rondaFiltroSala');
+  if(selSala){
+    selSala.innerHTML = '<option value="">Todas las salas</option>';
+    listadoSalas.forEach(s=>{
+      const opt = document.createElement('option');
+      opt.value = s;
+      opt.textContent = s;
+      selSala.appendChild(opt);
+    });
+  }
+  iniciarRondaPorSala();
+  abrirModal('modalModoRonda');
+}
+
+function iniciarRondaPorSala(){
+  const salaSel = document.getElementById('rondaFiltroSala')?.value || '';
+  rondaLista = data.pacientes
+    .filter(p => !p.egresado && (!salaSel || p.sala === salaSel))
+    .sort((a,b)=>{
+      const sA = listadoSalas.indexOf(a.sala);
+      const sB = listadoSalas.indexOf(b.sala);
+      if(sA !== sB) return sA - sB;
+      const cA = parseInt(a.cama)||9999;
+      const cB = parseInt(b.cama)||9999;
+      return cA - cB;
+    });
+  rondaIndice = 0;
+  renderizarRondaActual();
+}
+
+function moverRonda(delta){
+  if(rondaLista.length === 0)return;
+  rondaIndice = (rondaIndice + delta + rondaLista.length) % rondaLista.length;
+  renderizarRondaActual();
+}
+
+function renderizarRondaActual(){
+  const cont = document.getElementById('rondaContenido');
+  const cnt = document.getElementById('rondaContador');
+  if(!cont || !cnt)return;
+
+  if(rondaLista.length === 0){
+    cnt.textContent = '0 / 0';
+    cont.innerHTML = '<p class="text-center text-muted" style="padding:24px;">No hay pacientes activos en esta selección.</p>';
+    return;
+  }
+
+  if(rondaIndice >= rondaLista.length) rondaIndice = 0;
+  const p = data.pacientes.find(x => String(x.id) === String(rondaLista[rondaIndice].id)) || rondaLista[rondaIndice];
+  cnt.textContent = `${rondaIndice + 1} / ${rondaLista.length}`;
+
+  const tareasPend = (p.tareas||[]).filter(t=>!t.completado);
+  const coms = p.comentarios||[];
+  const ultCom = coms.length > 0 ? coms[coms.length-1] : null;
+  const ubic = p.cama ? `${p.sala} · Cama ${p.cama}` : p.sala;
+  const soloLectura = esModoSoloLecturaGitHub();
+
+  cont.innerHTML = `
+    <div class="ronda-card">
+      <div class="ronda-header">
+        <div>
+          <div style="font-size:16px;font-weight:700;color:var(--text);">${esc(p.nombre||'Anónimo')}</div>
+          <div style="font-size:12px;color:var(--primary-dark);font-weight:600;">📍 ${esc(ubic)}</div>
+        </div>
+        <div>
+          <span class="badge badge-${(p.reporte||'de cuidado').replace(' ','-')}">${esc((p.reporte||'').toUpperCase())}</span>
+        </div>
+      </div>
+
+      <div style="font-size:13px;margin-bottom:8px;">
+        <strong>Dx:</strong> ${esc(getDiagnosticoMostrar(p))}
+        ${p.operado && p.cirugiaRealizada ? `<div style="color:var(--operado);margin-top:2px;"><strong>Cirugía:</strong> ${esc(p.cirugiaRealizada)}</div>` : ''}
+      </div>
+
+      ${ultCom ? `<div class="p-nota" style="margin-bottom:8px;">💬 ${esc(ultCom.texto)}</div>` : ''}
+
+      <div style="margin-bottom:8px;">
+        <div style="font-size:12px;font-weight:600;color:var(--text-light);margin-bottom:4px;">📋 Tareas pendientes (${tareasPend.length})</div>
+        ${tareasPend.length === 0 ? '<div style="font-size:12px;color:var(--text-light);">Ninguna</div>' : tareasPend.map(t=>`
+          <div class="tarea-item">
+            <input type="checkbox" onchange="completarTareaEnRonda('${p.id}','${t.id}')">
+            <span class="tarea-text">${esc(t.texto)}</span>
+          </div>
+        `).join('')}
+      </div>
+
+      ${soloLectura ? '' : `
+        <div style="margin-top:10px;padding-top:10px;border-top:1px dashed var(--border);">
+          <div class="add-tarea-row" style="margin-top:0;margin-bottom:6px;">
+            <input type="text" id="rondaNotaInput" placeholder="💬 Nota rápida de evolución...">
+            <button type="button" class="btn-main btn-sm" onclick="guardarNotaRonda('${p.id}')">+ Nota</button>
+          </div>
+          <div class="add-tarea-row" style="margin-top:0;">
+            <input type="text" id="rondaTareaInput" placeholder="📋 Tarea rápida...">
+            <button type="button" class="btn-main btn-sm btn-success" onclick="guardarTareaRonda('${p.id}')">+ Tarea</button>
+          </div>
+        </div>
+      `}
+    </div>
+
+    <div class="ronda-nav">
+      <button type="button" class="btn-main" style="background:#64748b;" onclick="moverRonda(-1)">⬅️ Anterior</button>
+      <button type="button" class="btn-main" onclick="moverRonda(1)">Siguiente ➡️</button>
+    </div>
+  `;
+}
+
+function guardarNotaRonda(pacienteId){
+  const inp = document.getElementById('rondaNotaInput');
+  const txt = inp?.value.trim();
+  if(!txt)return;
+  const p = data.pacientes.find(x=>String(x.id)===String(pacienteId));
+  if(!p)return;
+  if(!Array.isArray(p.comentarios))p.comentarios=[];
+  p.comentarios.push({id:uid(),texto:txt,fecha:Date.now(),autor:perfil.nombre||'Anónimo'});
+  guardarEnLocalStorage();
+  renderizarSalas();
+  renderizarRondaActual();
+}
+
+function guardarTareaRonda(pacienteId){
+  const inp = document.getElementById('rondaTareaInput');
+  const txt = inp?.value.trim();
+  if(!txt)return;
+  const p = data.pacientes.find(x=>String(x.id)===String(pacienteId));
+  if(!p)return;
+  if(!Array.isArray(p.tareas))p.tareas=[];
+  p.tareas.push({id:uid(),texto:txt,completado:false,autor:perfil.nombre||'Anónimo'});
+  guardarEnLocalStorage();
+  renderizarTodo();
+  renderizarRondaActual();
+}
+
+function completarTareaEnRonda(pacienteId, tareaId){
+  const p = data.pacientes.find(x=>String(x.id)===String(pacienteId));
+  if(!p || !Array.isArray(p.tareas))return;
+  const t = p.tareas.find(x=>String(x.id)===String(tareaId));
+  if(t){
+    t.completado = true;
+    t.completadoFecha = Date.now();
+    addTimeline(p,'tarea','Tarea completada: '+t.texto);
+    guardarEnLocalStorage();
+    renderizarTodo();
+    renderizarRondaActual();
+  }
+}
+
+/* ============================================================
+   CAMBIO RÁPIDO DE LOCALIZACIÓN (SALA / CAMA)
+============================================================ */
+function abrirModalUbicacionRapida(pacienteId){
+  const p = data.pacientes.find(x=>String(x.id)===String(pacienteId));
+  if(!p)return;
+  document.getElementById('ubicacionPacienteId').value = String(p.id);
+  document.getElementById('ubicacionPacienteNombre').textContent = `${p.nombre||'Anónimo'} · Actual: ${p.sala}${p.cama?' (Cama '+p.cama+')':''}`;
+  const sel = document.getElementById('ubicacionSalaSelect');
+  sel.innerHTML = '';
+  listadoSalas.forEach(s=>{
+    const opt = document.createElement('option');
+    opt.value = s;
+    opt.textContent = s;
+    sel.appendChild(opt);
+  });
+  sel.value = listadoSalas.includes(p.sala) ? p.sala : (listadoSalas[0]||'');
+  document.getElementById('ubicacionCamaInput').value = p.cama || '';
+  toggleCampoCamaUbicacion();
+  abrirModal('modalUbicacionRapida');
+}
+
+function toggleCampoCamaUbicacion(){
+  const sel = document.getElementById('ubicacionSalaSelect');
+  const wrap = document.getElementById('ubicacionCamaWrapper');
+  const inp = document.getElementById('ubicacionCamaInput');
+  if(!sel||!wrap)return;
+  const ocultar = SALAS_SIN_CAMA.includes(sel.value);
+  wrap.classList.toggle('oculto', ocultar);
+  if(ocultar && inp)inp.value = '';
+}
+
+function guardarUbicacionRapida(){
+  const id = document.getElementById('ubicacionPacienteId').value;
+  const p = data.pacientes.find(x=>String(x.id)===String(id));
+  if(!p)return;
+  const nuevaSala = document.getElementById('ubicacionSalaSelect').value;
+  if(!nuevaSala){alert('Selecciona una sala');return;}
+  const sinCama = SALAS_SIN_CAMA.includes(nuevaSala);
+  const nuevaCama = sinCama ? null : (document.getElementById('ubicacionCamaInput').value.trim() || null);
+
+  const salaAnt = p.sala;
+  const camaAnt = p.cama || null;
+  p.sala = nuevaSala;
+  p.cama = nuevaCama;
+
+  if(salaAnt !== nuevaSala || String(camaAnt||'') !== String(nuevaCama||'')){
+    const descAnt = `${salaAnt}${camaAnt?' C'+camaAnt:''}`;
+    const descNue = `${nuevaSala}${nuevaCama?' C'+nuevaCama:''}`;
+    addTimeline(p,'cambio',`Localización: ${descAnt} → ${descNue}`);
+  }
+
+  const pIdx = data.pendientes.findIndex(item=>String(item.pacienteId)===String(p.id) && !item.completado);
+  if(pIdx!==-1){
+    const ubicacion = p.cama ? `Cama ${p.cama}` : 'Sin cama';
+    data.pendientes[pIdx].texto = `${p.nombre} - ${p.sala} (${ubicacion}): ${p.diagnostico}`;
+    data.pendientes[pIdx].sala = p.sala;
+    data.pendientes[pIdx].cama = p.cama;
+  }
+
+  guardarEnLocalStorage();
+  renderizarTodo();
+  cerrarModal('modalUbicacionRapida');
 }
 
 /* ============================================================
@@ -850,16 +1317,6 @@ async function dbGuardarFoto(foto){
     tx.objectStore(STORE_FOTOS).put(foto);
     tx.oncomplete = ()=>res();
     tx.onerror = e=>rej(e.target.error);
-  });
-}
-async function dbObtenerFotos(pacienteId){
-  const d = await abrirDB();
-  return new Promise((res,rej)=>{
-    const tx = d.transaction(STORE_FOTOS,'readonly');
-    const idx = tx.objectStore(STORE_FOTOS).index('pacienteId');
-    const req = idx.getAll(String(pacienteId));
-    req.onsuccess = ()=>res(req.result||[]);
-    req.onerror = e=>rej(e.target.error);
   });
 }
 async function dbEliminarFoto(id){
@@ -896,7 +1353,6 @@ function getFotosPaciente(pacienteId){return fotosCache.get(String(pacienteId))|
 /* ============================================================
    WHATSAPP SYNC (LZ-STRING)
 ============================================================ */
-// ✅ REEMPLAZA enviarDatosPorWhatsApp() CON ESTO:
 function enviarDatosPorWhatsApp() {
   const paquete = {
     _v: SCHEMA_VERSION,
@@ -908,12 +1364,9 @@ function enviarDatosPorWhatsApp() {
   try {
     const jsonString = JSON.stringify(paquete);
     const comprimido = LZString.compressToEncodedURIComponent(jsonString);
-    
-    // Elimina "index.html" para que coincida exactamente con el start_url de la PWA
     const rutaBase = window.location.pathname.replace(/index\.html$/, '');
     const urlGitHub = window.location.origin + rutaBase;
     const enlaceMagico = `${urlGitHub}?sync=${comprimido}`;
-
     abrirWhatsApp(enlaceMagico);
   } catch (error) {
     console.error("Error al comprimir datos:", error);
@@ -921,7 +1374,6 @@ function enviarDatosPorWhatsApp() {
   }
 }
 
-// ✅ REEMPLAZA comprobarSincronizacionURL() CON ESTO:
 function comprobarSincronizacionURL() {
   const params = new URLSearchParams(window.location.search);
   const hash = window.location.hash;
@@ -988,7 +1440,7 @@ function actualizarPerfilUI(){
     nm.textContent = perfil.nombre.split(' ')[0]+' ('+perfil.rol+')';
     badge.style.display = 'flex';
   } else {
-    av.textContent='?';nm.textContent='Configurar';
+    av.textContent='?';nm.textContent='Perfil';
   }
 }
 
@@ -998,7 +1450,7 @@ function migrarDatos(d,v){
   if(!d.recados)d.recados=[];
   if(!d.guardiaInicio)d.guardiaInicio=null;
   d.pacientes.forEach(p=>{
-    p.id = String(p.id); // Asegurar que el ID sea string
+    p.id = String(p.id);
     if(!Array.isArray(p.comentarios))p.comentarios=[];
     p.comentarios.forEach(c=>{if(!c.id)c.id=uid();if(!c.fecha)c.fecha=p.id;if(!c.autor)c.autor='';});
     if(!Array.isArray(p.tareas))p.tareas=[];
@@ -1028,7 +1480,7 @@ function guardarEnLocalStorage(sincronizar = true){
     if(sincronizar)programarSubidaGitHub();
   }
   catch(e){
-    if(e.name==='QuotaExceededError')alert('⚠️ Almacenamiento lleno. Exporta y reinicia.');
+    if(e.name==='QuotaExceededError')alert('⚠️ Almacenamiento lleno. Reinicia o sincroniza.');
     else console.error(e);
   }
 }
@@ -1044,6 +1496,9 @@ function toggleCampoCama(){
   else{wr.classList.remove('oculto');lbl.textContent='💡 Opcional';}
 }
 
+/* ============================================================
+   GITHUB SYNC
+============================================================ */
 const GH_CONFIG_KEY = 'guardiaGitHubSyncConfig';
 let ghConfig = { owner: '', repo: '', path: 'datos-guardia.json', token: '', sha: null };
 let ghSubiendo = false;
@@ -1127,20 +1582,16 @@ function aplicarModoSoloLecturaUI() {
   const fab = document.querySelector('.floating-container');
   if (fab) fab.style.display = soloLectura ? 'none' : '';
 
-  const btnReiniciar = document.querySelector('header .btn-icon.danger');
-  if (btnReiniciar) btnReiniciar.style.display = soloLectura ? 'none' : '';
+  const btnReiniciarItem = document.querySelector('#moreMenuDropdown .more-menu-item.danger');
+  if (btnReiniciarItem) btnReiniciarItem.style.display = soloLectura ? 'none' : '';
 
   const btnSalas = document.querySelector('header button[onclick*="modalGestionSalas"]');
   if (btnSalas) btnSalas.style.display = soloLectura ? 'none' : '';
 
-  document.querySelectorAll('.btn-action').forEach(btn => {
+  document.querySelectorAll('.btn-action, .btn-ubicacion-chip, .btn-task').forEach(btn => {
     const title = (btn.getAttribute('title') || '').toLowerCase();
-    const esEdicion = title.includes('editar') || title.includes('marcar') || title.includes('egresar') || title.includes('borrar');
+    const esEdicion = title.includes('editar') || title.includes('marcar') || title.includes('egresar') || title.includes('borrar') || title.includes('localización') || title.includes('subir') || title.includes('bajar');
     if (esEdicion) btn.style.display = soloLectura ? 'none' : '';
-  });
-
-  document.querySelectorAll('.select-transfer-rapido').forEach(sel => {
-    sel.style.display = soloLectura ? 'none' : '';
   });
 }
 
@@ -1169,9 +1620,9 @@ function actualizarBadgeGitHub() {
   if (ghSubiendo) {
     btn.textContent = '⏳ Sync...';
   } else if (puedeEditar) {
-    btn.textContent = '☁️ Sync (Edición)';
+    btn.textContent = '☁️ Sync';
   } else if (puedeLeer) {
-    btn.textContent = '👁️ Sync (Solo lectura)';
+    btn.textContent = '👁️ Lectura';
   } else {
     btn.textContent = '☁️ GitHub';
   }
@@ -1373,6 +1824,7 @@ async function subirDatosAGitHub(mostrarAlerta = false) {
     actualizarBadgeGitHub();
   }
 }
+
 /* ============================================================
    TIMELINE
 ============================================================ */
@@ -1545,6 +1997,22 @@ function renderizarDosisPaciente(pacienteId){
     `;
   }).join('');
 }
+function marcarDosisAhora(pacienteId, idx){
+  const p = data.pacientes.find(x=>String(x.id)===String(pacienteId));
+  if(!p || !Array.isArray(p.dosis) || !p.dosis[idx])return;
+  p.dosis[idx].ultimaDosis = Date.now();
+  guardarEnLocalStorage();
+  renderizarDosisPaciente(pacienteId);
+  renderizarSalas();
+}
+function eliminarDosis(pacienteId, idx){
+  const p = data.pacientes.find(x=>String(x.id)===String(pacienteId));
+  if(!p || !Array.isArray(p.dosis))return;
+  p.dosis.splice(idx,1);
+  guardarEnLocalStorage();
+  renderizarDosisPaciente(pacienteId);
+  renderizarSalas();
+}
 function añadirDosis(){
   const id = document.getElementById('dosisPacienteId').value;
   const p = data.pacientes.find(x=>String(x.id)===String(id));
@@ -1555,7 +2023,6 @@ function añadirDosis(){
   
   if(!med){alert('Indica el medicamento');return;}
   
-  // Validación estricta para evitar "fecha inválida"
   let ultimaTimestamp = Date.now();
   if(ultimaStr) {
     const parsedDate = new Date(ultimaStr).getTime();
@@ -1576,8 +2043,8 @@ function añadirDosis(){
   document.getElementById('dosisMedicamento').value='';
   document.getElementById('dosisUltima').value='';
   renderizarDosisPaciente(id);
+  renderizarSalas();
 }
-
 
 /* ============================================================
    CHECKLIST
@@ -1870,6 +2337,7 @@ window.addEventListener('DOMContentLoaded', async () => {
   cargarSalas();
   cargarPerfil();
   cargarConfigGitHub();
+  cargarEstadoDashboard();
 
   const vinoConConfig = comprobarConfigHashGitHub();
   const huboSincronizacion = comprobarSincronizacionURL();
@@ -1895,14 +2363,13 @@ document.addEventListener('visibilitychange', () => {
   }
 });
 
-
 function renderizarTodo(){
   renderizarSalas();
   renderizarLista('pendientes','listaPendientes');
   renderizarLista('recados','listaRecados');
+  renderizarTareasGlobales();
   actualizarSelectSalas();
   actualizarSelectPendienteSala();
-  actualizarSelectRecadoSala();
   actualizarSelectFiltroSala();
   mostrarGestionSalas();
   actualizarContadores();
@@ -1916,8 +2383,16 @@ function renderizarTodo(){
 function actualizarContadores(){
   const pc = document.getElementById('pendientesCount');
   const rc = document.getElementById('recadosCount');
+  const tc = document.getElementById('tareasGlobalesCount');
   if(pc)pc.textContent = data.pendientes.filter(i=>!i.completado).length;
   if(rc)rc.textContent = data.recados.filter(i=>!i.completado).length;
+  if(tc){
+    let totalTareas = 0;
+    data.pacientes.filter(p=>!p.egresado).forEach(p=>{
+      totalTareas += (p.tareas||[]).filter(t=>!t.completado).length;
+    });
+    tc.textContent = totalTareas;
+  }
 }
 function actualizarDashboard(){
   const ne = data.pacientes.filter(p=>!p.egresado);
@@ -1928,6 +2403,39 @@ function actualizarDashboard(){
   if(el('totalEmergencias'))el('totalEmergencias').textContent = ne.filter(p=>p.tipo==='Emergencia').length;
   if(el('totalGraves'))el('totalGraves').textContent = ne.filter(p=>p.reporte==='grave'||p.reporte==='critico').length;
   if(el('totalFallecidos'))el('totalFallecidos').textContent = data.pacientes.filter(p=>p.fallecido).length;
+}
+
+/* ============================================================
+   TAREAS GLOBALES (TODOS LOS PACIENTES)
+============================================================ */
+function renderizarTareasGlobales(){
+  const cont = document.getElementById('listaTareasGlobales');
+  if(!cont)return;
+  const items = [];
+  data.pacientes.filter(p=>!p.egresado).forEach(p=>{
+    (p.tareas||[]).forEach((t, idx)=>{
+      if(!t.completado){
+        items.push({ paciente: p, tarea: t, idx });
+      }
+    });
+  });
+
+  if(items.length === 0){
+    cont.innerHTML = '<p class="text-center text-muted" style="padding:12px;font-size:13px;">No hay tareas pendientes en los pacientes.</p>';
+    return;
+  }
+
+  cont.innerHTML = items.map(({paciente, tarea, idx})=>{
+    const ubic = paciente.cama ? `${paciente.sala} C${paciente.cama}` : paciente.sala;
+    return `
+      <div class="tarea-item" style="padding:6px 4px;border-bottom:1px solid var(--border);">
+        <input type="checkbox" onchange="toggleTareaPaciente('${paciente.id}',${idx})">
+        <span class="tarea-text">
+          <strong>${esc(paciente.nombre||'Anónimo')}</strong> <span style="font-size:11px;color:var(--primary-dark);">(${esc(ubic)})</span>: ${esc(tarea.texto)}
+        </span>
+      </div>
+    `;
+  }).join('');
 }
 
 /* ============================================================
@@ -2001,6 +2509,15 @@ function filtrarPacientes(){
         const pac = data.pacientes.find(x=>String(x.id)===String(pid));
         if(!pac || !(pac.tareas||[]).some(t=>!t.completado))match=false;
       }
+      if(fx==='dosis'){
+        const pid = item.getAttribute('data-paciente-id');
+        const pac = data.pacientes.find(x=>String(x.id)===String(pid));
+        if(!pac)match=false;
+        else{
+          const est = getEstadoDosisPaciente(pac);
+          if(est.vencidas===0 && est.proximas===0)match=false;
+        }
+      }
       if(fx==='fotos'){
         const pid = item.getAttribute('data-paciente-id');
         const pac = data.pacientes.find(x=>String(x.id)===String(pid));
@@ -2016,17 +2533,25 @@ function filtrarPacientes(){
     });
     card.style.display = (visibles===0 && (q||fe||fr||ft||fs||ff||fx))?'none':'';
   });
-} 
+}
 
 function renderizarSalas(){
   const contenedor = document.getElementById('salasContenedor');
   if(!contenedor)return;
+  const orden = document.getElementById('ordenSalasSelect')?.value || 'cama';
   contenedor.innerHTML = '';
   if(!listadoSalas.includes('Cuerpo de Guardia')){listadoSalas.push('Cuerpo de Guardia');guardarSalas();}
   listadoSalas.forEach(sala=>{
     const pacientesSala = data.pacientes
       .filter(p => p.sala === sala && !p.egresado)
       .sort((a,b)=>{
+        if(orden === 'gravedad'){
+          const gA = PESO_GRAVEDAD[a.reporte] || 0;
+          const gB = PESO_GRAVEDAD[b.reporte] || 0;
+          if(gA !== gB) return gB - gA;
+        } else if(orden === 'reciente'){
+          return Number(b.id) - Number(a.id);
+        }
         const cA = parseInt(a.cama)||9999;
         const cB = parseInt(b.cama)||9999;
         if(cA!==cB)return cA-cB;
@@ -2051,8 +2576,7 @@ function renderizarSalas(){
         const numComentarios = (p.comentarios||[]).length;
         const fotos = getFotosPaciente(p.id);
         const numFotos = fotos.length;
-        let opcionesSalas = `<option value="" disabled selected>Mover</option>`;
-        listadoSalas.forEach(s=>{if(s!==sala)opcionesSalas += `<option value="${esc(s)}">${esc(s)}</option>`;});
+        const dosisInfo = getEstadoDosisPaciente(p);
         const ubicacionCompleta = p.cama ? `C${p.cama}` : '';
         const dxMostrar = getDiagnosticoMostrar(p);
         const dxLabel = p.operado && p.diagnosticoOperatorio
@@ -2071,6 +2595,9 @@ function renderizarSalas(){
         const fotosBadge = numFotos>0
           ? `<span class="badge badge-foto" onclick="abrirModalFotos('${p.id}')">📸 ${numFotos}</span>`
           : '';
+        const dosisBadge = dosisInfo.textoBadge
+          ? `<span class="badge ${dosisInfo.claseBadge}" onclick="abrirModalDosis('${p.id}')">${esc(dosisInfo.textoBadge)}</span>`
+          : '';
         const fotosMiniHtml = numFotos>0
           ? `<div class="fotos-mini">${fotos.slice(0,4).map(f=>`<img class="foto-mini" src="${f.dataUrl}" onclick="abrirModalFotos('${p.id}')">`).join('')}</div>`
           : '';
@@ -2083,6 +2610,7 @@ function renderizarSalas(){
               ${p.fallecido?'💔':''}
               ${comentariosBadge}
               ${fotosBadge}
+              ${dosisBadge}
               ${tareasPendientes>0?`<span class="badge badge-tipo" style="cursor:pointer;" onclick="abrirModalTareas('${p.id}')">📋 ${tareasPendientes}</span>`:''}
             </div>
             ${hcHtml}
@@ -2100,21 +2628,22 @@ function renderizarSalas(){
               ${getEstadoBadge(p)}
             </div>
             <div class="actions-right">
-              <button class="btn-action" onclick="prepararEdicion('${p.id}')" title="Editar">✏️</button>
-              <button class="btn-action" onclick="abrirModalComentarios('${p.id}')" title="Comentarios">💬</button>
-              <button class="btn-action" onclick="abrirModalFotos('${p.id}')" title="Fotos">📸</button>
-              <button class="btn-action" onclick="abrirTimeline('${p.id}')" title="Timeline">🕐</button>
-              <button class="btn-action" onclick="abrirChecklist('${p.id}')" title="Checklist">✅</button>
-              <button class="btn-action" onclick="abrirModalDosis('${p.id}')" title="Medicación">💊</button>
-              <button class="btn-action" onclick="abrirEpicrisis('${p.id}')" title="Epicrisis">🖨️</button>
-              ${!p.operado && !p.egresado && !p.fallecido?`<button class="btn-action" onclick="marcarParaOperar('${p.id}')" title="Marcar para operar">🩸</button>`:''}
-              ${!p.egresado && !p.fallecido?`<button class="btn-action" onclick="marcarFallecido('${p.id}')" title="Marcar fallecido" style="color:#1e293b;">💔</button>`:''}
-              <button class="btn-action" onclick="alternarEgreso('${p.id}')" title="${p.egresado?'Restaurar':'Egresar'}">${p.egresado?'↩️':'🚪'}</button>
-              ${p.egresado?`<button class="btn-action" onclick="eliminarDefinitivo('${p.id}')" title="Borrar">🗑️</button>`:''}
-              <button class="btn-action" onclick="abrirModalTareas('${p.id}')" title="Tareas">📋</button>
-              <select class="select-transfer-rapido" onchange="ejecutarTransferenciaRapida('${p.id}', this.value)">
-                ${opcionesSalas}
-              </select>
+              <button type="button" class="btn-ubicacion-chip" onclick="abrirModalUbicacionRapida('${p.id}')" title="Cambiar localización">📍 ${ubicacionCompleta ? esc(p.sala)+' · '+esc(ubicacionCompleta) : esc(p.sala)}</button>
+              <button type="button" class="btn-action" onclick="prepararEdicion('${p.id}')" title="Editar perfil">✏️</button>
+              <button type="button" class="btn-action" onclick="abrirModalComentarios('${p.id}')" title="Comentarios">💬</button>
+              <button type="button" class="btn-action" onclick="abrirModalTareas('${p.id}')" title="Tareas">📋</button>
+              ${!p.operado && !p.egresado && !p.fallecido?`<button type="button" class="btn-action" onclick="marcarParaOperar('${p.id}')" title="Marcar para operar">🩸</button>`:''}
+              <button type="button" class="btn-action" onclick="toggleExtraActions('${p.id}')" title="Más opciones">🧰</button>
+            </div>
+            <div class="extra-actions-panel" id="extra-actions-${p.id}">
+              <button type="button" class="btn-action" onclick="abrirModalFotos('${p.id}')" title="Fotos">📸</button>
+              <button type="button" class="btn-action" onclick="abrirTimeline('${p.id}')" title="Timeline">🕐</button>
+              <button type="button" class="btn-action" onclick="abrirChecklist('${p.id}')" title="Checklist">✅</button>
+              <button type="button" class="btn-action" onclick="abrirModalDosis('${p.id}')" title="Medicación">💊</button>
+              <button type="button" class="btn-action" onclick="abrirEpicrisis('${p.id}')" title="Epicrisis">🖨️</button>
+              ${!p.egresado && !p.fallecido?`<button type="button" class="btn-action" onclick="marcarFallecido('${p.id}')" title="Marcar fallecido" style="color:#1e293b;">💔</button>`:''}
+              <button type="button" class="btn-action" onclick="alternarEgreso('${p.id}')" title="${p.egresado?'Restaurar':'Egresar'}">${p.egresado?'↩️':'🚪'}</button>
+              ${p.egresado?`<button type="button" class="btn-action" onclick="eliminarDefinitivo('${p.id}')" title="Borrar">🗑️</button>`:''}
             </div>
           </div>
         `;
@@ -2220,9 +2749,9 @@ function guardarPaciente(e){
       p.cama = cama||null;
       p.diagnostico = diagnostico;
       p.sala = sala;
-            if(sala!==salaAnterior)addTimeline(p,'cambio',`Movido de ${salaAnterior} a ${sala}`);
-if(estado)p.estado=estado; // ⬅️ Respeta siempre el estado seleccionado
-p.reporte = reporte;
+      if(sala!==salaAnterior)addTimeline(p,'cambio',`Movido de ${salaAnterior} a ${sala}`);
+      if(estado)p.estado=estado;
+      p.reporte = reporte;
       p.tipo = tipo;
       p.pendienteOperar = pendienteOperar;
       if(nuevoComentario){
@@ -2249,11 +2778,10 @@ p.reporte = reporte;
     return;
   }
 
-    const estadoFinal = estado; // ⬅️ Usa el estado que elegiste en el formulario
-  const timestampActual = Date.now(); // 👈 Aseguramos una fecha numérica válida y segura
+  const timestampActual = Date.now();
 
   const nuevoPaciente = {
-    id: String(timestampActual), // Forzamos que el ID y la fecha base sean correctos
+    id: String(timestampActual),
     nombre,
     historiaClinica: historiaClinica||null,
     edad: edad?Number(edad):null,
@@ -2261,7 +2789,7 @@ p.reporte = reporte;
     cama: cama||null,
     diagnostico,
     sala,
-    estado: estadoFinal,
+    estado: estado,
     reporte,
     tipo,
     egresado:false,
@@ -2290,7 +2818,7 @@ p.reporte = reporte;
   guardarEnLocalStorage();
   renderizarTodo();
   cerrarModal('modalPaciente');
-}  
+}
 
 function prepararEdicion(id){
   const p = data.pacientes.find(p=>String(p.id)===String(id));
@@ -2315,6 +2843,8 @@ function prepararEdicion(id){
   renderizarComentariosEnModalPaciente(p.id);
   document.getElementById('pNuevoComentario').value = '';
   document.getElementById('pNuevaTarea').value = '';
+  setCollapsibleState('secComentariosBody','secComentariosArrow',(p.comentarios||[]).length>0);
+  setCollapsibleState('secTareasBody','secTareasArrow',(p.tareas||[]).length>0);
   toggleCampoCama();
   abrirModal('modalPaciente');
 }
@@ -2327,7 +2857,6 @@ function marcarParaOperar(id){
   const ubicacion = p.cama?`Cama ${p.cama}`:'Sin cama';
   data.pendientes.push({id:uid(),texto:`${p.nombre} - ${p.sala} (${ubicacion}): ${p.diagnostico}`,sala:p.sala,cama:p.cama||null,completado:false,pacienteId:p.id});
   p.pendienteOperar = true;
-  // p.estado = 'ingreso_anterior'; ⬅️ Eliminado
   addTimeline(p,'cambio','Marcado para operar');
   guardarEnLocalStorage();
   renderizarTodo();
@@ -2364,26 +2893,6 @@ function eliminarDefinitivo(id){
   renderizarTodo();
 }
 
-function ejecutarTransferenciaRapida(id, nuevaSala){
-  if(!nuevaSala)return;
-  const p = data.pacientes.find(p=>String(p.id)===String(id));
-  if(p){
-    const ant = p.sala;
-    p.sala = nuevaSala;
-    if(SALAS_SIN_CAMA.includes(nuevaSala))p.cama = null;
-    addTimeline(p,'cambio',`Movido de ${ant} a ${nuevaSala}`);
-    const pIdx = data.pendientes.findIndex(item=>String(item.pacienteId)===String(p.id) && !item.completado);
-    if(pIdx!==-1){
-      const ubicacion = p.cama?`Cama ${p.cama}`:'Sin cama';
-      data.pendientes[pIdx].texto = `${p.nombre} - ${nuevaSala} (${ubicacion}): ${p.diagnostico}`;
-      data.pendientes[pIdx].sala = nuevaSala;
-      data.pendientes[pIdx].cama = p.cama||null;
-    }
-    guardarEnLocalStorage();
-    renderizarTodo();
-  }
-}
-
 function resetFormulario(){
   const f = document.getElementById('pacienteForm');
   if(f)f.reset();
@@ -2402,6 +2911,8 @@ function resetFormulario(){
   document.getElementById('pEdad').value = '';
   document.getElementById('pSexo').value = '';
   document.getElementById('pCama').value = '';
+  setCollapsibleState('secComentariosBody','secComentariosArrow',false);
+  setCollapsibleState('secTareasBody','secTareasArrow',false);
   toggleCampoCama();
 }
 
@@ -2763,20 +3274,9 @@ function actualizarSelectPendienteSala(){
   });
   if(cur && listadoSalas.includes(cur))s.value = cur;
 }
-function actualizarSelectRecadoSala(){
-  const s = document.getElementById('inputRecadoSala');
-  if(!s)return;
-  const cur = s.value;
-  s.innerHTML = '<option value="" selected>Sin sala (opcional)</option>';
-  listadoSalas.forEach(sala=>{
-    const o = document.createElement('option');
-    o.value=sala;o.textContent=sala;s.appendChild(o);
-  });
-  if(cur && listadoSalas.includes(cur))s.value = cur;
-}
 
 /* ============================================================
-   PENDIENTES
+   PENDIENTES & OPERACIÓN
 ============================================================ */
 function agregarPendiente(e){
   e.preventDefault();
@@ -2831,6 +3331,15 @@ function guardarEdicionPendiente(){
     cerrarModal('modalEditarPendiente');
   }
 }
+function toggleCampoCamaOperacion(){
+  const sel = document.getElementById('opNuevaSala');
+  const wrap = document.getElementById('opCamaWrapper');
+  const inp = document.getElementById('opNuevaCama');
+  if(!sel||!wrap)return;
+  const sinCama = SALAS_SIN_CAMA.includes(sel.value);
+  wrap.style.display = sinCama ? 'none' : '';
+  if(sinCama && inp)inp.value = '';
+}
 function completarPendiente(id){
   const item = data.pendientes.find(i=>i.id===id);
   if(item && !item.completado){
@@ -2839,6 +3348,27 @@ function completarPendiente(id){
     document.getElementById('opCirugia').value = '';
     document.getElementById('opDiagnostico').value = '';
     document.getElementById('opComentarios').value = '';
+
+    const opWrap = document.getElementById('opOpcionesPostWrapper');
+    const pac = item.pacienteId ? data.pacientes.find(p=>String(p.id)===String(item.pacienteId)) : null;
+    if(pac){
+      opWrap.style.display = 'block';
+      document.getElementById('opNuevoReporte').value = '';
+      const selSala = document.getElementById('opNuevaSala');
+      selSala.innerHTML = '';
+      listadoSalas.forEach(s=>{
+        const opt = document.createElement('option');
+        opt.value = s;
+        opt.textContent = s;
+        selSala.appendChild(opt);
+      });
+      selSala.value = listadoSalas.includes(pac.sala) ? pac.sala : (listadoSalas[0]||'');
+      document.getElementById('opNuevaCama').value = pac.cama || '';
+      toggleCampoCamaOperacion();
+    } else {
+      opWrap.style.display = 'none';
+    }
+
     abrirModal('modalRegistrarOperacion');
   } else if(item && item.completado){
     item.completado = false;
@@ -2877,6 +3407,27 @@ function registrarOperacion(){
         pac.diagnosticoOperatorio = dx;
         pac.comentariosOperatorio = coms||null;
         pac.operadoFecha = Date.now();
+
+        const nuevoReporte = document.getElementById('opNuevoReporte')?.value || '';
+        if(nuevoReporte && nuevoReporte !== pac.reporte){
+          const repAnt = pac.reporte;
+          pac.reporte = nuevoReporte;
+          addTimeline(pac,'cambio',`Reporte cambiado: ${repAnt} → ${nuevoReporte}`);
+        }
+
+        const nuevaSala = document.getElementById('opNuevaSala')?.value || '';
+        if(nuevaSala){
+          const sinCama = SALAS_SIN_CAMA.includes(nuevaSala);
+          const nuevaCama = sinCama ? null : (document.getElementById('opNuevaCama')?.value.trim() || null);
+          if(nuevaSala !== pac.sala || String(nuevaCama||'') !== String(pac.cama||'')){
+            const descAnt = `${pac.sala}${pac.cama?' C'+pac.cama:''}`;
+            const descNue = `${nuevaSala}${nuevaCama?' C'+nuevaCama:''}`;
+            pac.sala = nuevaSala;
+            pac.cama = nuevaCama;
+            addTimeline(pac,'cambio',`Ubicación post-op: ${descAnt} → ${descNue}`);
+          }
+        }
+
         if(coms){
           if(!Array.isArray(pac.comentarios))pac.comentarios=[];
           pac.comentarios.push({id:uid(),texto:`[Post-operatorio] ${coms}`,fecha:Date.now(),autor:perfil.nombre||'Anónimo'});
@@ -2891,50 +3442,82 @@ function registrarOperacion(){
 }
 
 /* ============================================================
-   RECADOS
+   RECADOS (SIN SALA + EDICIÓN Y REORDENAMIENTO)
 ============================================================ */
 function agregarRecado(e){
   e.preventDefault();
   const input = document.getElementById('inputRecado');
-  const salaSel = document.getElementById('inputRecadoSala');
   const txt = input.value.trim();
-  const sala = salaSel.value;
   if(!txt)return;
-  if(sala && !listadoSalas.includes(sala)){listadoSalas.push(sala);guardarSalas();actualizarSelectSalas();actualizarSelectRecadoSala();}
-  data.recados.push({id:uid(),texto:txt,sala:sala||null,completado:false});
+  data.recados.push({id:uid(),texto:txt,completado:false});
   input.value = '';
-  salaSel.value = '';
   guardarEnLocalStorage();
   renderizarLista('recados','listaRecados');
   cerrarModal('modalRecado');
+}
+function editarRecado(id){
+  const item = data.recados.find(i=>i.id===id);
+  if(item){
+    document.getElementById('editRecadoId').value = id;
+    document.getElementById('editRecadoTexto').value = item.texto;
+    abrirModal('modalEditarRecado');
+  }
+}
+function guardarEdicionRecado(){
+  const id = document.getElementById('editRecadoId').value;
+  const txt = document.getElementById('editRecadoTexto').value.trim();
+  if(!txt){alert('Ingresa un texto.');return;}
+  const item = data.recados.find(i=>i.id===id);
+  if(item){
+    item.texto = txt;
+    guardarEnLocalStorage();
+    renderizarLista('recados','listaRecados');
+    cerrarModal('modalEditarRecado');
+  }
+}
+function moverItemLista(key, index, delta){
+  const arr = data[key];
+  if(!Array.isArray(arr))return;
+  const nuevoIdx = index + delta;
+  if(nuevoIdx < 0 || nuevoIdx >= arr.length)return;
+  const [movido] = arr.splice(index, 1);
+  arr.splice(nuevoIdx, 0, movido);
+  guardarEnLocalStorage();
+  renderizarLista(key, key==='pendientes'?'listaPendientes':'listaRecados');
 }
 function renderizarLista(key, elId){
   const ul = document.getElementById(elId);
   if(!ul)return;
   ul.innerHTML = '';
-  data[key].forEach(item=>{
+  const total = data[key].length;
+  data[key].forEach((item, idx)=>{
     const li = document.createElement('li');
     li.className = `task-item ${item.completado?'completed':''}`;
+    const btnUp = idx > 0 ? `<button class="btn-task" onclick="moverItemLista('${key}',${idx},-1)" title="Subir">↑</button>` : '';
+    const btnDown = idx < total - 1 ? `<button class="btn-task" onclick="moverItemLista('${key}',${idx},1)" title="Bajar">↓</button>` : '';
     let acciones = '';
     if(key==='pendientes'){
       acciones = `<div class="task-actions">
-        <button class="btn-task" onclick="editarPendiente('${item.id}')">✏️</button>
-        <button class="btn-task" onclick="completarPendiente('${item.id}')">${item.completado?'↩️':'✅'}</button>
-        <button class="btn-task" onclick="eliminarItem('${key}','${item.id}')">🗑️</button>
+        ${btnUp}${btnDown}
+        <button class="btn-task" onclick="editarPendiente('${item.id}')" title="Editar">✏️</button>
+        <button class="btn-task" onclick="completarPendiente('${item.id}')" title="Marcar">${item.completado?'↩️':'✅'}</button>
+        <button class="btn-task" onclick="eliminarItem('${key}','${item.id}')" title="Borrar">🗑️</button>
       </div>`;
     } else {
       acciones = `<div class="task-actions">
-        <button class="btn-task" onclick="alternarItem('${key}','${item.id}')">${item.completado?'↩️':'✅'}</button>
-        <button class="btn-task" onclick="eliminarItem('${key}','${item.id}')">🗑️</button>
+        ${btnUp}${btnDown}
+        <button class="btn-task" onclick="editarRecado('${item.id}')" title="Editar">✏️</button>
+        <button class="btn-task" onclick="alternarItem('${key}','${item.id}')" title="Marcar">${item.completado?'↩️':'✅'}</button>
+        <button class="btn-task" onclick="eliminarItem('${key}','${item.id}')" title="Borrar">🗑️</button>
       </div>`;
     }
     let infoExtra = '';
     if(key==='pendientes' && item.completado && item.cirugiaRealizada)infoExtra = `<div style="font-size:10px;color:var(--operado);">🩸 ${esc(item.cirugiaRealizada)}</div>`;
-    if(key==='recados' && item.sala)infoExtra = `<div style="font-size:10px;color:var(--primary);">🏥 ${esc(item.sala)}</div>`;
     li.innerHTML = `<div style="flex:1;"><span class="task-text">${esc(item.texto)}</span>${infoExtra}</div>${acciones}`;
     ul.appendChild(li);
   });
   actualizarContadores();
+  aplicarModoSoloLecturaUI();
 }
 function alternarItem(key,id){
   const item = data[key].find(i=>i.id===id);
@@ -2971,18 +3554,16 @@ function abrirModal(id){
   const menu = document.getElementById('fabMenu');
   if(menu && menu.style.display==='flex')toggleFabMenu();
   if(id==='modalPendiente')actualizarSelectPendienteSala();
-  if(id==='modalRecado')actualizarSelectRecadoSala();
-  // ✅ CÓDIGO CORREGIDO EN abrirModal(id)
-if(id==='modalPaciente'){
-  if(!document.getElementById('editPacienteId').value){
-    document.getElementById('pNombre').value = '';
-    document.getElementById('pHistoriaClinica').value = '';
-    document.getElementById('pEdad').value = '';
-    document.getElementById('pSexo').value = '';
-    document.getElementById('pPendienteOperar').checked = false;
+  if(id==='modalPaciente'){
+    if(!document.getElementById('editPacienteId').value){
+      document.getElementById('pNombre').value = '';
+      document.getElementById('pHistoriaClinica').value = '';
+      document.getElementById('pEdad').value = '';
+      document.getElementById('pSexo').value = '';
+      document.getElementById('pPendienteOperar').checked = false;
+    }
+    toggleCampoCama();
   }
-  toggleCampoCama();
-}
 }
 function cerrarModal(id){
   const el = document.getElementById(id);
@@ -3004,6 +3585,7 @@ function cambiarTab(tab){
   const tc = document.getElementById('tab-'+tab);
   if(tc)tc.classList.add('active');
   if(tab==='lista')renderizarListaGeneral();
+  if(tab==='pendientes')renderizarTareasGlobales();
   if(tab==='estadisticas')setTimeout(renderizarStats,100);
 }
 
@@ -3151,12 +3733,12 @@ function generarPDFInforme(){
     line('PENDIENTES A OPERAR:',{size:12,bold:true});
     const pend = data.pendientes.filter(i=>!i.completado);
     if(pend.length===0)line('• Sin pendientes.',{indent:3});
-    else pend.forEach((i,n)=>line(`${n+1}. ${i.texto}`,{indent:3}));
+    else pend.forEach((i,n)=>{line(`${n+1}. ${i.texto}`,{indent:3});});
     y += 3;
     line('RECADOS:',{size:12,bold:true});
     const rec = data.recados.filter(i=>!i.completado);
     if(rec.length===0)line('• Sin recados.',{indent:3});
-    else rec.forEach((i,n)=>line(`${n+1}. ${i.texto}`,{indent:3}));
+    else rec.forEach((i,n)=>{line(`${n+1}. ${i.texto}`,{indent:3});});
     y += 3;
     line('FALLECIDOS:',{size:12,bold:true});
     const fal = data.pacientes.filter(p=>p.fallecido===true);
@@ -3169,57 +3751,6 @@ function generarPDFInforme(){
     const menu = document.getElementById('fabMenu');
     if(menu && menu.style.display==='flex')toggleFabMenu();
   }catch(e){console.error(e);alert('❌ Error generando el PDF: '+e.message);}
-}
-
-/* ============================================================
-   IMPORT / EXPORT JSON
-============================================================ */
-function exportarDatos(){
-  const datos = {version:'1.0',schemaVersion:SCHEMA_VERSION,fechaExportacion:new Date().toISOString(),salas:listadoSalas,data};
-  const json = JSON.stringify(datos,null,2);
-  const blob = new Blob([json],{type:'application/json'});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `guardia_cirugia_${new Date().toISOString().slice(0,10)}.json`;
-  document.body.appendChild(a);a.click();document.body.removeChild(a);
-  URL.revokeObjectURL(url);
-  alert('✅ Datos exportados correctamente.');
-}
-function importarDatos(){document.getElementById('fileInput').click();}
-function validarDatosImportados(d){
-  if(!d || typeof d!=='object')return'Archivo inválido.';
-  if(!Array.isArray(d.salas))return'Falta la lista de salas.';
-  if(!d.data || typeof d.data!=='object')return'Faltan los datos.';
-  if(!Array.isArray(d.data.pacientes))return'Lista de pacientes inválida.';
-  if(!Array.isArray(d.data.pendientes))return'Lista de pendientes inválida.';
-  if(!Array.isArray(d.data.recados))return'Lista de recados inválida.';
-  const inv = d.data.pacientes.find(p=>!p||typeof p!=='object'||!p.sala||!p.diagnostico);
-  if(inv)return'Hay pacientes con datos incompletos.';
-  return null;
-}
-function procesarImportacion(event){
-  const file = event.target.files[0];
-  if(!file)return;
-  const reader = new FileReader();
-  reader.onload = function(e){
-    try{
-      const datos = JSON.parse(e.target.result);
-      const err = validarDatosImportados(datos);
-      if(err){alert('❌ '+err);return;}
-      if(!confirm('⚠️ ¿Importar datos? Se reemplazarán TODOS los datos actuales.'))return;
-      listadoSalas = datos.salas;
-      data = migrarDatos(datos.data,datos.data._v||5);
-      guardarSalas();
-      guardarEnLocalStorage();
-      renderizarTodo();
-      alert('✅ Datos importados correctamente.');
-    }catch(err){alert('❌ Error al leer el archivo: '+err.message);}
-    finally{
-      event.target.value='';
-    }
-  };
-  reader.readAsText(file);
 }
 
 /* ============================================================
@@ -3340,15 +3871,17 @@ function reordenarSalas(from,to){
 })();
 
 /* ============================================================
-   ESC + ESTILOS IMPRESIÓN
+   ESC
 ============================================================ */
 document.addEventListener('keydown',function(e){
   if(e.key==='Escape'){
+    closeMoreMenu();
     document.querySelectorAll('.modal-overlay').forEach(m=>{
       if(m.style.display==='flex')cerrarModal(m.id);
     });
   }
 });
+
 /* ============================================================
    REGISTRO DEL SERVICE WORKER Y BOTÓN DE INSTALACIÓN PWA
 ============================================================ */
