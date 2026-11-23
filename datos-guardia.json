@@ -537,6 +537,32 @@
         "timeline": [],
         "checklists": {},
         "fotosCount": 0
+      },
+      {
+        "id": "1795436201366",
+        "nombre": "Anónimo",
+        "historiaClinica": null,
+        "edad": null,
+        "sexo": null,
+        "cama": "16",
+        "diagnostico": "HDA",
+        "sala": "1A",
+        "estado": "ingresado",
+        "reporte": "de cuidado",
+        "tipo": "Urgencia",
+        "egresado": false,
+        "operado": false,
+        "fallecido": false,
+        "pendienteOperar": false,
+        "cirugiaRealizada": null,
+        "diagnosticoOperatorio": null,
+        "comentariosOperacion": null,
+        "tareas": [],
+        "comentarios": [],
+        "dosis": [],
+        "timeline": [],
+        "checklists": {},
+        "fotosCount": 0
       }
     ],
     "pendientes": [
@@ -623,5 +649,5 @@
     ],
     "guardiaInicio": 1795182983540
   },
-  "actualizadoEn": 1795436133652
+  "actualizadoEn": 1795436202069
 }
