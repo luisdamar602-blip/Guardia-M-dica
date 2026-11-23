@@ -353,9 +353,9 @@
         "historiaClinica": null,
         "edad": null,
         "sexo": null,
-        "cama": "6",
+        "cama": null,
         "diagnostico": "Hernia Inguinoescrotal derecha Atascada ",
-        "sala": "Polivalente",
+        "sala": "1A",
         "estado": "ingresado",
         "reporte": "de cuidado",
         "tipo": "Urgencia",
@@ -369,7 +369,15 @@
         "tareas": [],
         "comentarios": [],
         "dosis": [],
-        "timeline": [],
+        "timeline": [
+          {
+            "id": "190cdfec-6600-4355-91a2-2f0ba2296309",
+            "tipo": "cambio",
+            "fecha": 1795435225329,
+            "texto": "Movido de Polivalente a 1A",
+            "autor": "LuisDamar Martínez Hevia"
+          }
+        ],
         "checklists": {},
         "fotosCount": 0
       },
@@ -512,9 +520,9 @@
       },
       {
         "id": "c8570a6f-e836-406a-90eb-fc088204e1cc",
-        "texto": "Benedicto - Polivalente (Cama 6): Hernia Inguinoescrotal derecha Atascada ",
-        "sala": "Polivalente",
-        "cama": "6",
+        "texto": "Benedicto - 1A (Sin cama): Hernia Inguinoescrotal derecha Atascada ",
+        "sala": "1A",
+        "cama": null,
         "completado": false,
         "pacienteId": "1795381223545"
       },
@@ -543,5 +551,5 @@
     ],
     "guardiaInicio": 1795182983540
   },
-  "actualizadoEn": 1795392893467
+  "actualizadoEn": 1795435226063
 }
