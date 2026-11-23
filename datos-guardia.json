@@ -379,11 +379,11 @@
         "reporte": "de cuidado",
         "tipo": "Urgencia",
         "egresado": false,
-        "operado": false,
+        "operado": true,
         "fallecido": false,
-        "pendienteOperar": true,
-        "cirugiaRealizada": null,
-        "diagnosticoOperatorio": null,
+        "pendienteOperar": false,
+        "cirugiaRealizada": "Quelotomia + Hernioplastia Inguinal",
+        "diagnosticoOperatorio": "Hernia Inguinoescrotal derecha atascada + tumor de saco herniario",
         "comentariosOperacion": null,
         "tareas": [],
         "comentarios": [],
@@ -395,10 +395,19 @@
             "fecha": 1795435225329,
             "texto": "Movido de Polivalente a 1A",
             "autor": "LuisDamar Martínez Hevia"
+          },
+          {
+            "id": "7d45fed6-8be4-4087-9851-e6a5fb6d9a3e",
+            "tipo": "operacion",
+            "fecha": 1795435356370,
+            "texto": "Operado: Quelotomia + Hernioplastia Inguinal — Dx Op: Hernia Inguinoescrotal derecha atascada + tumor de saco herniario",
+            "autor": "LuisDamar Martínez Hevia"
           }
         ],
         "checklists": {},
-        "fotosCount": 0
+        "fotosCount": 0,
+        "comentariosOperatorio": null,
+        "operadoFecha": 1795435356370
       },
       {
         "id": "1795381260042",
@@ -558,8 +567,11 @@
         "texto": "Benedicto - 1A (Sin cama): Hernia Inguinoescrotal derecha Atascada ",
         "sala": "1A",
         "cama": null,
-        "completado": false,
-        "pacienteId": "1795381223545"
+        "completado": true,
+        "pacienteId": "1795381223545",
+        "cirugiaRealizada": "Quelotomia + Hernioplastia Inguinal",
+        "diagnosticoOperatorio": "Hernia Inguinoescrotal derecha atascada + tumor de saco herniario",
+        "comentariosOperatorio": null
       },
       {
         "id": "01010aa9-a830-4f9d-9d5c-f01de5141178",
@@ -589,5 +601,5 @@
     ],
     "guardiaInicio": 1795182983540
   },
-  "actualizadoEn": 1795435326408
+  "actualizadoEn": 1795435357074
 }
