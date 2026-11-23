@@ -230,11 +230,11 @@
         "reporte": "de cuidado",
         "tipo": "Urgencia",
         "egresado": false,
-        "operado": false,
+        "operado": true,
         "fallecido": false,
-        "pendienteOperar": true,
-        "cirugiaRealizada": null,
-        "diagnosticoOperatorio": null,
+        "pendienteOperar": false,
+        "cirugiaRealizada": "Resección en bloque",
+        "diagnosticoOperatorio": "Ántrax Dorsal",
         "comentariosOperacion": null,
         "tareas": [],
         "comentarios": [],
@@ -246,10 +246,19 @@
             "fecha": 1795370375274,
             "texto": "Movido de Cuerpo de Guardia a 1B",
             "autor": "LuisDamar Martínez Hevia"
+          },
+          {
+            "id": "da2d6d90-762b-4cd9-9449-f18896fd40f7",
+            "tipo": "operacion",
+            "fecha": 1795435260159,
+            "texto": "Operado: Resección en bloque — Dx Op: Ántrax Dorsal",
+            "autor": "LuisDamar Martínez Hevia"
           }
         ],
         "checklists": {},
-        "fotosCount": 0
+        "fotosCount": 0,
+        "comentariosOperatorio": null,
+        "operadoFecha": 1795435260159
       },
       {
         "id": "1795353817881",
@@ -496,8 +505,11 @@
         "texto": "Emma Aviles Tamayo - 1B (Cama 14): Ántrax Dorsal ",
         "sala": "1B",
         "cama": "14",
-        "completado": false,
-        "pacienteId": "1795353801298"
+        "completado": true,
+        "pacienteId": "1795353801298",
+        "cirugiaRealizada": "Resección en bloque",
+        "diagnosticoOperatorio": "Ántrax Dorsal",
+        "comentariosOperatorio": null
       },
       {
         "id": "9385f53b-f266-49fc-967b-7ad0e253c904",
@@ -551,5 +563,5 @@
     ],
     "guardiaInicio": 1795182983540
   },
-  "actualizadoEn": 1795435226063
+  "actualizadoEn": 1795435260862
 }
